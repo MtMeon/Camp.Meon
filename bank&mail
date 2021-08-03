@@ -1,0 +1,2028 @@
+#include<stdio.h>
+
+int main()
+{
+  // 은행로그인 항목
+	int s, ider = 0, pwer = 0, alert = 0, slot[3] = { 0, }, nslot = 0, bday[3] = { 0, }, slotf1 = 0, slotf2 = 0, bdayf, lc = 0, bloginid, bloginpw, acc, accs[3] = { 0, }, 
+	accer = 0, cardpw, cardpws[3] = { 0, }, otp[3] = { 0, }, getmail = 0, getotp = 0, cotp = 0, otper = 0, ipw = 0;
+	char id[50] = { "" }, pw[20], pwc[20], ids[3][50] = { {""}, }, pws[3][21], name[3][21] = { {""}, }, add[3][100], email[3][100], fname[21], femail[100];
+
+	// 은행기능 항목
+	int amoney[3] = { 0, }, money = 0;
+
+	// 메일항목
+	char mailid[100], mailpw[100], mailpwc[100], mailids[3][100] = { "","","" }, mailpws[3][100] = { "","","" }, mailacc[3][100] = {"","",""},
+	mailname[10], mailnames[3][10], mailcomp[100], mailcomps[3][100], mailtitle[30], mailbody[100], send[100] = { " " }, recive[100] = { " " },
+	// 보낸 메일함 - srecive[로그인계정][받은계정] 
+	srecive[3][10][10] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	// 받은 메일함 - rsend[로그인계정][보낸계정]
+	rsend[3][10][10] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	// 보낸 메일함 - smail[로그인계정][메일]
+	smailbox[3][10][30] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	smailtitler[3][10][30] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	smailbodyr[3][10][100] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	// 받은 메일함 - rmail[로그인계정][메일]
+	rmailbox[3][10][30] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	rmailtitler[3][10][30] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} },
+	rmailbodyr[3][10][100] = { {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "}, {" "," "," "," "," "," "," "," "," "," "} };
+	int mider = 0, mpwer = 0, mealert = 0, smailc[3] = { 0, }, rmailc[3] = { 0, }, 메일주민번호[3], mailphone[3], mailslot[3] = { 0, }, mailnslot = 0, mailer = 0, mailfc = 0, loginc1 = 0, loginc2 = 0, mailf1, mailf2,
+	mfr1 = 0, mfr2 = 0, mfslot1, mfslot2, sindex = 0 , rindex = 0, delmail = 0;
+
+
+login_select:
+	printf("\n");
+	printf("[1.은행] [2.이메일] [3. 프로그램 종료]\n");
+	printf("로그인 할 항목을 선택하세요. - ");
+	scanf("%d", &s);
+
+	// 은행 로그인
+	if (s == 1)
+	{
+		// 은행 회원관리
+		bank:
+		printf("== 은행 로그인 ==\n");
+		while (1)
+		{
+			printf("\n아래 항목 중 원하시는 기능을 선택하세요\n");
+			printf("1. 기존회원\n");
+			printf("2. 회원가입\n");
+			printf("3. 계정(ID/PW) 찾기\n");
+			printf("4. 은행에서 나가기\n");
+			printf("선택 - ");
+			scanf("%d", &s);
+
+			// 기존회원 로그인
+			if (s == 1)
+			{
+				printf("\n기존회원을 선택하셨습니다.\n");
+
+				do
+				{
+					// ID 입력
+					printf("\n");
+					printf("ID - ");
+					scanf("%s", &id);
+
+					// PW입력
+					printf("비밀번호(패스워드) - ");
+					scanf("%s", &pw);
+
+					// 로그인 선택여부
+					printf("1.로그인 // 2. 취소(이전선택으로) - ");
+					scanf("%d", &s);
+
+					if (s == 1)
+					{
+						// 로그인시 ID, PW 유효성 확인
+						for (int i = 0; i < 3; i++)
+						{
+							if (strcmp(ids[i], id) == 0)
+							{
+								bloginid = i;
+								ider = 0;
+							}
+							else
+							{
+								ider = ider + 1;
+							}
+							if (strcmp(pws[i], pw) == 0)
+							{
+								bloginpw = i;
+								pwer = 0;
+							}
+							else
+							{
+								pwer = pwer + 1;
+							}
+						}
+
+						// ID가 없거나 틀린경우
+						if (ider > 2)
+						{
+							printf("ID가 없거나 정확하지 않습니다.\n");
+						}
+
+						// PW가 없거나 틀린경우
+						if (pwer > 2)
+						{
+							printf("비밀번호가 틀립니다.\n");
+							alert = alert + 1;
+							printf("남은시도횟수 - %d 회\n", 3 - alert);
+							if (alert == 3)
+							{
+								printf("모든 시도횟수를 사용하였습니다. 종료합니다.\n");
+								return 0;
+							}
+						}
+
+						// ID, PW 하나라도 틀린경우 안내
+						if (ider + pwer > 4)
+						{
+							printf("이전 메뉴에서 ID, 비밀번호를 찾거나 회원가입하세요.\n");
+							printf("1.로그인 재시도 // 2.이전메뉴로 - ");
+							scanf("%d", &s);
+							if (s == 1)
+							{
+								printf("\n로그인을 재시도 합니다.\n");
+							}
+							if (s == 2)
+							{
+								printf("\n시도횟수를 3회로 초기화하며 이전메뉴로 이동합니다.\n");
+								alert = 0;
+								goto bank;
+							}
+						}
+					}
+
+					// 로그인 취소
+					if (s == 2)
+					{
+						printf("은행 초기 화면으로 돌아갑니다.\n");
+						goto bank;
+					}
+					// ID,PW 모두 에러 없을경우 이후 진행
+				} while (ider + pwer > 4);
+
+
+				// 정상적인 로그인시
+				if (bloginid == bloginpw)
+				{
+					printf("로그인되었습니다.\n");
+					
+					// 임시 비밀번호 발급 안내
+					if (ipw > 0)
+					{
+						printf("임시 비밀번호으로 로그인 하셨습니다. 비밀번호를 변경해주세요\n");
+						ipw = 0;
+					}
+
+					// 은행 기능
+					while (1)
+					{
+						printf("\n[[ 은행 서비스 목록 ]]\n");
+						printf("[1.계좌조회] [2.계좌 입 / 출금] [3. 비밀번호 / 개인정보 변경] [4. 로그아웃]\n");
+						printf("사용하고 싶은 서비스를 선택하세요. - ");
+						scanf("%d", &s);
+						switch (s)
+						{
+							// 계좌조회
+						case 1:
+						{
+							printf("\n[[계좌 조회 선택]]\n");
+							printf("현재 로그인한 계정 - %s (%s 님)\n", ids[bloginid], name[bloginid]);
+							printf("보유 중인 계좌 - %d\n", accs[bloginid]);
+							printf("계좌 잔액 - %d 원\n", amoney[bloginid]);
+							break;
+						}
+
+						// 계좌입/출금
+						case 2:
+						{
+							printf("\n[[계좌 입/출금 선택]]");
+
+							// 카드 비밀번호 입력
+							do
+							{
+								printf("계좌 입/출금을 하기 위해서는 카드 비밀번호 4자리를 입력하세요.\n");
+								printf("카드 비밀번호(숫자 4자리) - ");
+								scanf("%d", &cardpw);
+
+								// 카드 비밀번호 검증
+								for (int i = 0; i < 3; i++)
+								{
+									if (cardpws[i] == cardpw)
+									{
+										pwer = 0;
+									}
+									else
+									{
+										pwer = pwer + 1;
+									}
+								}
+
+								// 틀린 횟수 알림
+								if (pwer > 2)
+								{
+									printf("비밀번호가 틀렸습니다.\n");
+									alert = alert + 1;
+									printf("남은 시도횟수는 %d 번 입니다.\n", 3 - alert);
+									if (alert = 3)
+									{
+										printf("모든 시도횟수를 사용하여 프로그램을 종료합니다.\n");
+										return 0;
+									}
+								}
+							} while (pwer > 2);
+
+							// 카드 비밀번호 정상 입력 후
+							printf("현재 계좌 - %d\n", accs[bloginid]);
+							printf("계좌 잔액 - %d 원\n", amoney[bloginid]);
+
+							// 입/출금 선택
+							printf("원하시는 기능을 선택하세요 (1.입금 / 2.출금) - ");
+							scanf("%d", &s);
+
+							// 입금
+							if (s == 1)
+							{
+								printf("계좌에 입금합니다. 얼마를 입금하겠습니까? - ");
+								scanf("%d", &money);
+								printf(" 원\n");
+								amoney[bloginid] = amoney[bloginid] + money;
+								printf("입금 후 계좌 잔액 %d 원\n", amoney[bloginid]);
+							}
+
+							// 출금
+							if (s == 2)
+							{
+								printf("계좌에서 출금합니다.\n");
+								do
+								{
+									printf("출금할 금액 - ");
+									scanf("%d", &money);
+									if (money > amoney[bloginid])
+									{
+										printf("잔액보다 더 많은 금액입니다. 확인하세요\n");
+									}
+								} while (money > amoney[bloginid]);
+
+								printf("출금 후 잔액은 %d 원입니다.\n", amoney[bloginid] - money);
+								printf("출금하겠습니까?(1.진행 / 2. 취소) - ");
+								scanf("%d", &s);
+
+								// 출금 진행
+								if (s == 1)
+								{
+									do
+									{
+										printf("카드 비밀번호를 입력해주세요 - ");
+										scanf("%s", &cardpw);
+										if (cardpws[bloginid] == cardpw)
+										{
+											amoney[bloginid] = amoney[bloginid] - money;
+										}
+										else
+										{
+											printf("비밀번호가 틀렸습니다.\n");
+										}
+									} while (cardpws[bloginid] != cardpw);
+
+									// 출금 진행 결과
+									printf("%d 원 출금되었습니다.\n", money);
+									printf("출금 후 잔액은 %d 원 입니다.\n", amoney[bloginid]);
+								}
+
+								// 출금 취소
+								if (s == 2)
+								{
+									printf("출금이 취소되었습니다. 은행 서비스 목록으로 이동합니다.\n");
+								}
+							}
+							break;
+						}
+
+						// 카드 비밀번호 변경
+						case 3:
+						{
+							printf("비밀번호 / 개인정보를 변경합니다,\n");
+							printf("변경하려는 항목을 선택하세요 (1.비밀번호 변경 // 2.개인정보 변경 // 3. 취소) - ");
+							scanf("%d", &s);
+
+							// 비밀번호 변경
+							if (s == 1)
+							{
+								printf("비밀번호를 변경합니다.\n");
+								printf("변경하려는 항목을 선택하세요 (1. 로그인 비밀번호 변경 // 2. 카드 비밀번호 변경) - ");
+
+								// 로그인 비밀번호 변경
+								if (s == 1)
+								{
+									printf("기존 비밀번호를 확입합니다.\n");
+									do
+									{
+										printf("로그인 비밀번호를 입력하세요  - ");
+										scanf("%s", &pw);
+
+										// 기존 비밀번호 확인
+										if (strcmp(pws[bloginid], pw) == 0)
+										{
+											pwer = 0;
+										}
+										else
+										{
+											pwer = 1;
+											printf("로그인 비밀번호가 틀렸습니다. 확인해주세요.\n");
+											alert = alert + 1;
+											printf("남은 시도 횟수 - %d 회\n", 3 - alert);
+
+											// 모든 시도 실패시 은행 시스템에서 로그아웃
+											if (alert == 3)
+											{
+												printf("모든 시도를 하였습니다. 자동 로그아웃됩니다.\n");
+												goto blogout;
+											}
+										}
+									} while (pwer != 0);
+
+									// 로그인 비밀번호 확인 후 각 오류치 초기화
+									pwer = 0;
+									alert = 0;
+
+									// 새 비밀번호 입력
+									do
+									{
+										printf("새로운 로그인 비밀번호를 입력하세요 - ");
+										scanf("%s", &pw);
+										printf("새로운 로그인 비밀번호 확인 입력 - ");
+										scanf("%s", &pwc);
+
+										// 새 비밀번호 확인
+										if (strcmp(pw, pwc) == 0)
+										{
+											strcpy(pws[bloginid], pwc);
+										}
+										else
+										{
+											printf("입력값이 다릅니다. 다시 입력해주세요.\n");
+										}
+									} while (strcmp(pw, pwc) != 0);
+
+
+									// 변경 완료시
+									printf("로그인 비밀번호가 %s 로 변경되었습니다.\n", pws[bloginid]);
+								}
+
+								// 카드 비밀번호 변경
+								if (s == 2)
+								{
+									// 기존 카드 비밀번호
+									do
+									{
+										printf("우선 기존 카드 비밀번호를 확인합니다.\n");
+										printf("카드 비밀번호(4자리 숫자) 를 입력하세요 - ");
+										scanf("%d", &cardpw);
+
+										if (cardpws[bloginid] == cardpw)
+										{
+											pwer = 0;
+										}
+										else
+										{
+											pwer = 1;
+											printf("입력한 카드 비밀번호가 틀립니다. 다시 입력해주세요\n");
+											alert = alert + 1;
+											printf("남은 시도 횟수 - %d 회", 3 - alert);
+											if (alert == 3)
+											{
+												printf("시도횟수를 모두 사용하였습니다. 자동 로그아웃됩니다.\n");
+												goto blogout;
+											}
+										}
+									} while (pwer != 0);
+
+									// 비밀번호 오류치 초기화
+									pwer = 0;
+									alert = 0;
+
+									// 새 카드 비밀번호 입력
+									do
+									{
+										printf("새 카드 비밀번호(4자리 숫자) 를 입력하세요 - ");
+										scanf("%d", &cardpw);
+
+										// 새 카드 비밀번호 자리수 확인
+										for (int i = cardpw; i > 0;)
+										{
+											i = i / 10;
+											lc = lc + 1;
+										}
+										if (lc == 4)
+										{
+											pwer = 0;
+										}
+										else
+										{
+											pwer = 1;
+											printf("입력한 값이 4자리 숫자인 것을 확인해주세요.\n");
+										}
+									} while (pwer != 0);
+
+									// 비밀번호 오류치 초기화 
+									pwer = 0;
+									lc = 0;
+
+									// 새 카드 비밀번호 재확인
+									do
+									{
+										printf("새 카드 비밀번호(4자리 숫자) 재입력 - ");
+										scanf("%d", &pwc);
+										if (cardpw == pwc)
+										{
+											cardpws[bloginid] = cardpw;
+											pwer = 0;
+										}
+										else
+										{
+											printf("입력값이 다릅니다. 다시 입력해주세요.\n");
+											pwer = 1;
+										}
+									} while (pwer != 0);
+
+									// 새 카드 비밀번호 적용 알림
+									printf("새 카드 비밀번호는 %d 로 변경되었습니다.\n", cardpws[bloginid]);
+
+								}
+							}
+
+							// 개인정보 변경
+							if (s == 2)
+							{
+								// 기존 회원정보 확인
+								while (1)
+								{
+									printf("\n[[ 회원정보 ]]\n");
+									printf("ID - %s\n", ids[bloginid]);
+									printf("이름 - %s\n", name[bloginid]);
+									printf("주민번호(앞자리) - %d\n", bday[bloginid]);
+									printf("주소 - %s\n", add[bloginid]);
+									printf("이메일주소 - %s\n", email[bloginid]);
+
+									// 변경하실 정보 선택
+									printf("변경하실 개인정보를 선택해주세요 (ID는 제외)\n");
+									printf("[1.이름][2.주민번호][3.주소][4.이메일주소][5.이전화면]");
+									printf("변경하려는 개인정보 - ");
+
+									// 이름 변경
+									if (s == 1)
+									{
+										printf("기존 이름 - %s\n", name[bloginid]);
+										printf("변경 이름 - ");
+										scanf("%s", name[bloginid]);
+									}
+
+									// 주민번호 변경
+									if (s == 2)
+									{
+										printf("기존 주민번호 - %d\n", bday[bloginid]);
+										printf("변경 주민번호 - ");
+										scanf("%d", bday[bloginid]);
+									}
+
+									// 주소 변경
+									if (s == 3)
+									{
+										printf("기존 주소 - %s\n", add[bloginid]);
+										printf("변경 주소 - ");
+										scanf("%s", &add[bloginid]);
+									}
+
+									// 이메일 주소 변경
+									if (s == 4)
+									{
+										printf("기존 이메일 주소 - %s\n", email[bloginid]);
+										printf("변경 이메일 주소 - ");
+										scanf("%s", &email[bloginid]);
+									}
+
+									// 이전 메뉴로
+									if (s == 5)
+									{
+										printf("정보변경을 종료하고 이전화면으로 돌아갑니다.\n");
+										break;
+									}
+								}
+							}
+						}
+
+						// 로그아웃
+						case 4:
+						{
+						blogout:
+							printf("은행 계정에서 로그아웃합니다.\n");
+							goto login_select;
+						}
+						}
+					}
+				}
+			}
+
+			// 회원가입
+			if (s == 2)
+			{
+				printf("회원가입을 선택하였습니다\n");
+				
+				// 이메일 유무 확인
+				printf("\n *회원가입전 확인사항* \n");
+				printf("이메일 계정이 필요합니다. 패스워드를 찾을때 본인인증번호를 메일로 받기 때문에 이메일이 필요합니다.\n");
+				printf("이메일 계정 보유 확인 (1.있음 / 2.없음) - ");
+				scanf("%d", &s);
+
+				// 이메일 계정이 있는 경우, 은행 회원가입 진행
+				if (s == 1)
+				{
+					getbankacc:
+					printf("\n은행 회원가입을 계속합니다.\n");
+
+					// 빈 슬롯 찾기
+					for (int i = 0; i < 3; i++)
+					{
+						if (slot[i] == 0)
+						{
+							nslot = nslot + 1;
+						}
+					}
+
+					// 빈 슬롯 지정
+					nslot = 3 - nslot;
+					slot[nslot] = 1;
+
+					// ID 입력
+					do
+					{
+						printf("사용하실 ID - ");
+						scanf("%s", &id);
+
+						// ID 중복 검출기
+						for (int i = 0; i < 3; i++)
+						{
+
+							// ID 중복시 에러
+							if (strcmp(ids[i], id) == 0)
+							{
+								ider = ider + 1;
+							}
+
+							// ID 미중복시 중복수치 초기화
+							else
+							{
+								ider = 0;
+							}
+						}
+
+						// ID 중복 검출 결과
+						if (ider > 2)
+						{
+							printf("\n");
+							printf("입력하신 %s 는 이미 등록된 ID 입니다.\n", id);
+						}
+					} while (ider > 0);
+
+
+					// 중복된 ID가 없는 경우 지정된 빈 슬롯에 저장
+					printf("\n");
+					printf("사용 가능한 ID 입니다.\n");
+					strcpy(ids[nslot], id);
+
+					// id 입력 완료시 에러 횟수 초기화
+					ider = 0;
+
+					// 패스워드 입력 - 패스워드 최소 자릿수 확인
+					do
+					{
+						printf("사용할 패스워드 - ");
+						scanf("%s", &pw);
+						printf("패스워드 재확인 - ");
+						scanf("%s", &pwc);
+
+						// 패스워드 확인 기능
+						if (strcmp(pw, pwc) == 0)
+						{
+							pwer = 0;
+							printf("\n");
+							printf("동일합니다.\n");
+							strcpy(pws[nslot], pw);
+						}
+						else
+						{
+							pwer = 1;
+							printf("\n");
+							printf("동일하지 않습니다. 확인해주세요\n ");
+						}
+					} while (pwer > 0);
+
+					// 비밀번호 입력 완료시 에러 횟수 초기화
+					pwer = 0;
+
+					// 카드비밀번호 입력
+					do
+					{
+						printf("사용할 카드비밀번호(숫자 4자리) - ");
+						scanf("%d", &cardpw);
+
+						// 카드비밀번호 입력 검증 - 검증안됨, 진행불가
+						for (int i = cardpw; i > 0;)
+						{
+							i = i / 10;
+							lc = lc + 1;
+						}
+
+						if (lc == 4)
+						{
+							printf("\n");
+							printf("조건에 성립합니다.\n");
+						}
+
+						else
+						{
+							printf("\n");
+							printf("4자리 숫자로 입력하였는지 확인하세요.\n");
+							lc = 0;
+						}
+					} while (lc != 4);
+
+					// 입력된 카드 비밀번호가 정상인 경우 저장
+					cardpws[nslot] = cardpw;
+
+					// 길이 체크 초기화
+					lc = 0;
+
+					// 개인정보 입력
+					while (1)
+					{
+						// 이름
+						printf("이름 - ");
+						scanf("%s", &name[nslot]);
+
+						// 주민번호 입력
+						do
+						{
+							printf("주민번호(앞자리) - ");
+							scanf("%d", &bday[nslot]);
+
+							// 주민번호 자리수 검증
+							for (int a = bday[nslot]; a > 0;)
+							{
+								a = a / 10;
+								lc = lc + 1;
+							}
+							if (lc != 6)
+							{
+								printf("\n");
+								printf("6자리 숫자로 입력하였는지 확인하세요\n");
+								lc = 0;
+							}
+						} while (lc != 6);
+
+						//길이체크 초기화
+						lc = 0;
+
+						// 주소
+						printf("주소 - ");
+						scanf("%s", &add[nslot]);
+
+						//이메일 ID
+						printf("이메일ID - ");
+						scanf("%s", &email[nslot]);
+
+						// 입력완료 후 회원정보 확인
+						printf("\n");
+						printf("[[ 입력 회원정보 확인 ]]\n");
+						printf("ID - %s\n", ids[nslot]);
+						printf("비밀번호 - %s\n", pws[nslot]);
+						printf("이름 - %s\n", name[nslot]);
+						printf("주민번호(앞자리) - %d\n", bday[nslot]);
+						printf("주소 - %s\n", add[nslot]);
+						printf("이메일 주소 - %s @mailing.com \n", email[nslot]);
+
+						// 입력정보 재확인
+						printf("\n");
+						printf("입력한 회원정보로 회원가입을 완료하면 계좌는 자동으로 생성합니다. (1.완료합니다 / 2.회원정보를 수정합니다.) - ");
+						scanf("%d", &s);
+
+						// 회원가입 완료
+						if (s == 1)
+						{
+
+							// 계좌번호 생성기
+							do
+							{
+								srand((unsigned)time(NULL));
+								for (int i = 0; i < 1; i++)
+								{
+									acc = rand() % 89999999 + 10000000;
+								}
+
+								// 계좌번호 중복여부 확인
+								for (int i = 0; i < 3; i++)
+								{
+									if (accs[i] != acc)
+									{
+										accer = 0;
+									}
+									else
+									{
+										accer = accer + 1;
+									}
+								}
+								// 중복시 자동 재생성
+							} while (accer > 2);
+
+							// 중복된 계좌가 없을 경우 계좌 저장 및 중복확인 초기화
+							accs[nslot] = acc;
+							accer = 0;
+
+							// 회원가입 완료시
+							printf("\n");
+							printf("생성된 계좌는 %d 입니다.\n", accs[nslot]);
+							printf("회원가입을 완료하고 메인화면으로 이동합니다.\n");
+							break;
+						}
+
+						// 회원정보 수정
+						if (s == 2)
+						{
+							printf("\n");
+							printf("회원정보 입력으로 돌아갑니다.\n");
+						}
+
+					}
+				}
+
+				// 이메일 계정이 없는 경우, 메일 로그인 화면으로 이동
+				if (s == 2)
+				{
+					printf("\n");
+					printf("이메일 로그인 화면으로 이동합니다. 해당 화면에서 회원가입을 선택해주세요\n");
+					getmail = 1;
+					goto mailsys;
+				}
+			}
+			
+			// ID 및 패스워드 찾기
+			if (s == 3)
+			{
+				printf("\n");
+				printf("계정(ID / 비밀번호) 찾기 및 비밀번호 변경을 선택하였습니다.\n");
+
+				// 찾기 항목 선택
+				printf("\n");
+				printf("찾으실 항목을 선택하세요.(1.ID 찾기 / 2.비밀번호(패스워드) 찾기) - ");
+				scanf("%d", &s);
+
+				// ID 찾기
+				if (s == 1)
+				{
+					printf("\n");
+					printf("[[ ID 찾기 ]]\n");
+
+					// ID 찾기 - 이름입력
+					printf("\n");
+					printf("찾으시려는 ID에 등록된 이름을 입력하세요 - ");
+					scanf("%s", &fname);
+
+					// ID 찾기- 이메일 입력 
+					printf("\n");
+					printf("찾으시려는 ID에 등록된 이메일을 입력하세요 - ");
+					scanf("%s", &femail);
+
+					// 확인 모듈
+					for (int i = 0; i < 3; i++)
+					{
+						if (strcmp(name[i], fname) == 0)
+						{
+							slotf1 = i;
+						}
+						if (strcmp(email[i], femail) == 0)
+						{
+							slotf2 = i;
+						}
+					}
+
+					// 확인결과
+					if (slotf1 == slotf2)
+					{
+						printf("\n");
+						printf("찾으시는 ID는 %s 입니다.\n", ids[slotf1]);
+					}
+					else
+					{
+						printf("\n");
+						printf("일치하는 ID가 없습니다.\n");
+					}
+				}
+
+				// pw 찾기
+				if (s == 2)
+				{
+					printf("\n");
+					printf("비밀번호(패스워드) 찾기를 선택하였습니다.\n");
+
+					printf("\n");
+					printf("ID를 입력하세요 - ");
+					scanf("%s", &id);
+
+					printf("\n");
+					printf("주민번호 앞자리 6자리를 입력하세요 - ");
+					scanf("%d", &bdayf);
+
+					// 확인모듈
+					for (int i = 0; i < 3; i++)
+					{
+						if (strcmp(ids[i], id) == 0)
+						{
+							slotf1 = i;
+						}
+						if (bday[i] == bdayf)
+						{
+							slotf2 = i;
+						}
+					}
+
+					// 찾은 ID와 등록된 주민번호 알치
+					if (slotf1 == slotf2)
+					{
+						printf("\n");
+						printf("사용자 인증을 위해 OTP(숫자 4자리)를 생성합니다.\n");
+
+						// otp 만들기
+						srand((unsigned)time(NULL));
+						for (int i = 0; i < 1; i++)
+						{
+							otp[slotf1] = rand() % 8999 + 1000;
+						}
+
+						// otp 생성 결과
+						getotp = 1;
+
+						
+						// 등록된 메일 ID를 메일시스템에서 찾기
+						for (int i = 0; i < 3; i++)
+						{
+							if (strcmp(mailids[i], email[slotf1]) == 0)
+							{
+								slotf2 = i;
+							}
+						}
+
+						// 만들어진 otp를 메일로 보내기
+						// 해당 메일함 빈 자리 확인
+						for (int i = 9; i >= 0; i--)
+						{
+							if (strcmp(rmailbox[slotf2], " ") == 0)
+							{
+								rindex = i;
+							}
+						}
+
+						// 받는 이메일에 otp 보내기
+						strcpy(rmailbox[slotf2][rindex], "은행 비밀번호 찾기 OTP입니다."); // 받은메일함에 표시
+						strcpy(rmailtitler[slotf2][rindex], "은행 비밀번호 찾기 OTP입니다."); // 받은메일 제목
+						strcpy(rsend[slotf2][rindex], "은행 계정 관리"); // 받은메일 - 보낸사람 표시
+						sprintf(rmailbodyr[slotf2][rindex], "%d", otp[slotf1]);
+
+						// otp 보낸 결과 안내
+						printf("\n");
+						printf("등록된 이메일 주소인 '%s@mailing.com'으로 임시 인증번호를 전송하였습니다.\n", email[slotf1]);
+
+
+						// otp에서 메일로그인 이동
+						if (getotp == 1)
+						{
+							printf("\n");
+							printf("지금 바로 이메일 로그인화면으로 이동하겠습니까? (1.이동 // 2.취소) - ");
+							scanf("%d", &s);
+
+							// otp 이메일 로그인화면으로 실시간이동
+							if (s == 1)
+							{
+								printf("\n");
+								printf("이메일 로그인 화면으로 이동합니다.\n");
+								goto mailsys;
+							}
+
+							// 이메일 로그인화면으로 실시간이동 취소
+							if (s == 2)
+							{
+								printf("\n");
+								printf("지금 이동하지 않습니다.\n");
+							}
+
+							// otp 확인하고 온 경우
+							if (getotp > 0)
+							{
+								// otp 확인
+							otpcheck:
+								printf("\n");
+								do
+								{
+									printf("\n");
+									printf("메일에서 확인한 OTP를 입력해주세요 - ");
+									scanf("%d", &cotp);
+
+									// otp 인증시
+									if (otp[slotf1] == cotp)
+									{
+										printf("\n");
+										printf("OTP 인증 완료 되었습니다.\n");
+
+										// 임시 비밀번호 발급
+										printf("\n");
+										printf("임시 비밀번호(6자리 숫자) 를 발급합니다.\n");
+										srand((unsigned)time(NULL));
+										for (int i = 0; i < 1; i++)
+										{
+											ipw = rand() % 899999 + 100000;
+										}
+										sprintf(pws[slotf1], "%d", ipw);
+
+										
+
+										// otp 발급상태 초기화
+										getotp = 0;
+
+										// 모든 인증 및 임시 비밀번호 발급 완료
+										printf("\n");
+										printf("발급된 임시 비밀번호는 %s 입니다.", pws[slotf1]);
+										printf("은행 로그인 화면으로 이동합니다.\n");
+									}
+
+									// otp 인증실패, 3회 실패시 강제종료
+									else
+									{
+										otper = otper + 1;
+										printf("\n");
+										printf("인증번호가 틀립니다. 다시 확인해주세요.(남은 시도횟수는 %d 번입니다.)\n", 3 - otper);
+										if (otper == 3)
+										{
+											printf("\n");
+											printf("모든 시도횟수를 사용하였습니다. 종료됩니다.\n");
+											return 0;
+										}
+									}
+								} while (otp[slotf1] != cotp);
+							}
+						}
+
+						// otp가 미생성된 경우
+						else
+						{
+							printf("\n");
+							printf("OTP가 생성되지 않았습니다.\n");
+						}						
+					}
+					
+					// ID와 등록된 주민번호 미일치
+					else
+					{
+					printf("\n");
+					printf("일치하는 정보가 없습니다. 확인해주세요\n");
+					}
+				}
+			}
+
+			// 이전화면으로
+			if (s == 4)
+			{
+				printf("\n");
+				printf("초기 선택화면으로 이동합니다.\n");
+				goto login_select;
+			}
+		}
+	}
+
+	// 메일
+	if (s == 2)
+	{
+	mailsys:
+		// 메일시스템
+		while (1)
+		{
+			printf("\n\n");
+			printf("|| 메일 시스템  ||\n");
+			printf("|| emailing.com ||\n");
+
+			printf("\n");
+			printf("== 항목 선택 == \n");
+			printf("1. 로그인\n");
+			printf("2. 회원가입\n");
+			printf("3. ID / 비밀번호 찾기\n");
+			printf("4. 메일시스템에서 나가기\n");
+			printf("선택 - ");
+			scanf("%d", &s);
+			switch (s)
+			{
+				//메일시스템 로그인
+				case 1:
+				{
+					do
+					{
+						printf("\n");
+						printf("|| emailing.com 에 로그인합니다. ||\n");
+						printf("\n");
+						printf("ID - ");
+						scanf("%s", &mailid);
+						printf("비밀번호 - ");
+						scanf("%s", &mailpw);
+
+						// ID, pw 확인
+						for (int i = 0; i < 3; i++)
+						{
+							// ID 확인
+							if (strcmp(mailids[i], mailid) == 0)
+							{
+								loginc1 = i;
+								mider = 0;
+							}
+							else
+							{
+								mider = mider + 1;
+							}
+
+							// PW확인
+							if (strcmp(mailpws[i], mailpw) == 0)
+							{
+								loginc2 = i;
+								mpwer = 0;
+							}
+							else
+							{
+								mpwer = mpwer + 1;
+							}
+						}
+
+						// ID가 저장된 것과 모두 틀린 경우
+						if (mider > 2)
+						{
+							printf("\n");
+							printf("ID가 틀렸습니다. 확인해주세요\n");
+						}
+
+						// PW가 저장된 것과 모두 틀린 경우
+						if (mpwer > 2)
+						{
+							printf("\n");
+							printf("비밀번호가 틀렸습니다. 확인해주세요\n");
+						}
+
+						// 로그인 시도 횟수
+						if (mpwer == 3)
+						{
+							mealert = mealert + 1;
+							printf("\n");
+							printf("로그인 시도 3회 중 %d 회 남았습니다.\n", 3 - mealert);
+							if (mealert == 3)
+							{
+								printf("\n");
+								printf("모든 로그인 시도를 하였으나 실패하였으므로 로그인을 종료합니다.\n");
+								goto mailsys;
+							}
+							printf("\n");
+							printf("재시도 하시겠습니까?(1.예 // 2. 메일시스템 메인화면으로 돌아갑니다.) - ");
+							scanf("%d", &s);
+							if (s == 1)
+							{
+								printf("\n");
+								printf("로그인을 재시도 합니다.\n");
+							}
+							if (s == 2)
+							{
+								printf("\n");
+								printf("메일시스템 메인화면으로 돌아갑니다.\n");
+								goto mailsys;
+							}
+						}
+					} while (mider + mpwer > 4);
+
+					// 정상적인 로그인시 에러 횟수 초기화
+					mider = 0;
+					mpwer = 0;
+
+					// 메일로그인 알림
+					printf("\n");
+					printf("|| emailing.com 에 로그인 되었습니다. ||\n");
+					printf("로그인한 계정 - %s\n", mailids[loginc1]);
+
+					// 메일 기능 선택
+					do
+					{
+						printf("\n");
+						printf("== 주요 기능 == \n");
+						printf("1. 메일함 보기\n");
+						printf("2. 메일 쓰기\n");
+						printf("3. 메일 지우기\n");
+						printf("4. 비밀번호 / 개인정보 변경\n");
+						printf("5. 로그아웃\n");
+						printf("선택 - ");
+						scanf("%d", &s);
+
+						switch (s)
+						{
+							// 메일함 확인
+							case 1:
+							{
+								printf("\n");
+								printf("[[ 전체 메일함 ]]\n");
+								printf("[1.받은 메일] [2.보낸 메일]\n");
+								printf("메일함 선택 - ");
+								scanf("%d", &s);
+
+								//받은 메일함
+								if (s == 1)
+								{
+									rmbox:
+									printf("\n");
+									printf("[[ 받은 메일함 ]]\n");
+
+									// 받은 메일 수량 체크
+									for (int i = 0; i < 10; i++)
+									{
+										if (strcmp(rmailbox[loginc1][i], " ") != 0)
+										{
+											rmailc[loginc1] = rmailc[loginc1] + 1;
+										}
+										else
+										{
+											rmailc[loginc1] = rmailc[loginc1];
+										}
+									}
+
+									// 받은 메일 목록
+									printf("\n");
+									printf("현재 받은 메일 건수는 총 %d 건 입니다.\n", rmailc[loginc1]);
+									printf("\n====================================\n");
+									for (int i = 0; i <= rmailc[loginc1]; i++)
+									{
+										if (strcmp(rmailbox[loginc1][i], " ") != 0)
+										{
+											printf("%d 번 || 메일 제목 - %s\n", i + 1, rmailbox[loginc1][i]);
+										}
+										else
+										{
+											printf("\n");
+										}
+									}
+									printf("\n====================================\n");
+
+									// 메일 삭제시 삭제선택 항목으로 이동
+									if (delmail > 0)
+									{
+										goto delrmbox;
+									}
+									
+									
+									// 읽을 메일을 선택
+									if (rmailc[loginc1] > 0)
+									{
+										printf("\n");
+										printf("읽을 메일의 번호를 선택하세요 - ");
+										scanf("%d", &s);
+										printf("\n");
+										printf("========================\n");
+										printf("□ 제목 - %s\n", rmailtitler[loginc1][s-1]);
+										printf("□ 보낸 사람 - %s\n", rsend[loginc1][s-1]);
+										printf("------------------------\n");
+										printf("□ 내용 - %s\n", rmailbodyr[loginc1][s-1]);
+										printf("========================\n");
+
+										// otp 인증인 경우 바로 otp 인증 화면으로 넘어가기
+										if (getotp > 0)
+										{
+											printf("\n");
+											printf("은행 사용자 인증 OTP 확인으로 이동합니다.\n");
+											goto otpcheck;
+										}
+										else
+										{
+											printf("\n");
+										}
+									}
+								}
+								break;
+
+								// 보낸 메일함
+								if (s == 2)
+								{
+								smbox:
+									printf("\n");
+									printf("[[ 보낸 메일함 ]]\n");
+
+									// 보낸 메일 수량 체크
+									for (int i = 0; i < 10; i++)
+									{
+										if (strcmp(smailbox[loginc1][i], " ") != 0)
+										{
+											smailc[loginc1] = smailc[loginc1] + 1;
+										}
+									}
+
+									// 보낸 메일 목록
+									printf("현재 보낸 메일 건수는 총 %d 건 입니다.\n", smailc[loginc1]);
+									printf("\n====================================\n");
+									for (int i = 0; i <= smailc[loginc1]; i++)
+									{
+										if (strcmp(smailbox[loginc1][i], " ") != 0)
+										{
+											printf("%d 번 || %s\n", i + 1, smailbox[loginc1][i]);
+										}
+									}
+									printf("\n====================================\n");
+
+									// 메일 삭제시 삭제선택 항목으로 이동
+									if (delmail > 0)
+									{
+										goto delsmbox;
+									}
+									
+									// 보낸 메일이 있을때
+									if (smailc[loginc1] > 0)
+									{
+										printf("확인할 보낸 메일의 번호를 선택하세요 - ");
+										scanf("%d", &s);
+										printf("========================\n");
+										printf("□ 제목 - %s\n", smailtitler[loginc1][s]);
+										printf("□ 받은 사람 - %s\n", srecive[loginc1][s]);
+										printf("------------------------\n");
+										printf("□ 내용 - %s\n", smailbodyr[loginc1][s]);
+										printf("========================\n");
+									}
+								}
+								break;
+							}
+
+							// 메일쓰기
+							case 2:
+							{
+								printf("메일을 작성하고 전송합니다.\n");
+								printf("아래에서 해당되는 항목을 선택하세요.(1. 상대방 메일ID를 아는 경우 // 2. 모르는 경우) - ");
+								scanf("%d", &s);
+
+								// 상대 메일 ID 아는 경우
+								if (s == 1)
+								{
+									printf("메일 받을사람 ID - ");
+									scanf("%s", &mailid);
+									for (int i = 0; i < 3; i++)
+									{
+										if (strcmp(mailids[i], mailid) == 0)
+										{
+											mailf1 = i;
+											mider = 0;
+										}
+										else
+										{
+											mider = mider + 1;
+										}
+									}
+
+									// 메일 ID 검색 결과
+									if (mider > 2)
+									{
+										printf("해당 ID를 사용하는 사용자는 없습니다.\n");
+									}
+									else
+									{
+										printf("사용 중인 메일 주소 - %s @ mailing.com\n", mailids[mailf1]);
+										printf("이름 - %s\n", mailnames[mailf1]);
+										printf("회사 - %s\n", mailcomps[mailf1]);
+										printf("찾은 메일 주소로 메일을 보내겠습니까? (1.예 / 2.아니오) - ");
+										scanf("%d", &s);
+
+										// 찾은 메일 ID를 수신 지정
+										if (s == 1)
+										{
+											printf("찾은 메일 ID(%s)를 받을 사람에 추가합니다.\n", mailids[mailf1]);
+											strcpy(recive, mailids[mailf1]);
+										}
+
+										// 수신 미지정
+										if (s == 2)
+										{
+											printf("찾은 메일 ID를 적용하지 않습니다.\n");
+											printf("다음 항목 중 선택하세요 (1.메일 작성으로 이동 // 2. 로그인화면으로 이동) - ");
+											scanf("%d", &s);
+										}
+									}
+
+								}
+
+								// 상대 메일 주소를 모를 경우 
+								if (s == 2)
+								{
+									printf("메일 받을사람 이름 - ");
+									scanf("%s", &mailname);
+									printf("메일 받는분의 회사이름 - ");
+									scanf("%s", &mailcomp);
+
+									// 내용이 일치하는 ID 찾기
+									for (int i = 0; i < 3; i++)
+									{
+										// 이름에서 찾기
+										if (strcmp(mailnames[i], mailname) == 0)
+										{
+											mailf1 = i;
+											mider = 0;
+										}
+										else
+										{
+											mider = mider + 1;
+										}
+
+										// 회사에서 찾기
+										if (strcmp(mailcomps[i], mailcomp) == 0)
+										{
+											mailf2 = i;
+											mailfc = 0;
+										}
+										else
+										{
+											mailfc = mailfc + 1;
+										}
+									}
+
+									// 찾은 결과 - 있음
+									if (mailf1 == mailf2)
+									{
+										printf("메일 주소 - %s @mailing.com\n", mailids[mailf1]);
+										printf("해당 메일주소로 메일을 작성하겠습니까? (1.작성 // 2.취소) - ");
+										scanf("%d", &s);
+
+										// 메일 작성으로 이동
+										if (s == 1)
+										{
+											printf("메일 작성으로 이동합니다.\n");
+											goto mailedit;
+										}
+
+										// 
+										if (s == 2)
+										{
+											printf("기능 선택으로 돌아갑니다.\n");
+										}
+
+									}
+									
+									// 찾은 결과 - 없음
+									else
+									{
+										if (mider > 2)
+										{
+											printf("이름 정보가 일치하는 ID가 없습니다.\n");
+										}
+										if (mailfc > 2)
+										{
+											printf("회사 정보가 일치하는 ID가 없습니다.\n");
+										}
+									}
+								}
+
+								// 메일 편집기
+							mailedit:
+								printf("\n[[ 메일 편집기 ]]\n");
+								// 보내는 사람은 로그인 계정 그대로 받아오기
+								printf("보내는 사람 - %s\n", mailids[loginc1]);
+
+								// 메일 받을 사람
+								printf("받는 사람 - %s\n", mailids[mailf1]);
+
+								// 메일 제목 
+								printf("메일 제목 - ");
+								scanf("%s", &mailtitle);
+
+								// 메일 본문
+								printf("메일 본문 - ");
+								scanf("%s", &mailbody);
+
+								printf("메일을 전송하시겠습니까? (1.전송 // 2.취소) - ");
+								scanf("%d", &s);
+
+								// 메일보내기
+								if (s == 1)
+								{
+									// 받는 사람의 받은 메일함 빈칸 확인
+									for (int i = 9; i >= 0; i--)
+									{
+										if (strcmp(rmailbox[mailf1][i], " ") == 0)
+										{
+											rindex = i;
+										}
+									}
+
+									// 받는 계정 메일함에 남기기
+									strcpy(rmailbox[mailf1][rindex], mailtitle); // 받은메일함 목록 표시
+									strcpy(rmailtitler[mailf1][rindex], mailtitle); // 받은메일 제목
+									strcpy(rsend[mailf1][rindex], mailids[loginc1]); // 받은 메일함 - 보낸사람
+									strcpy(rmailbodyr[mailf1][rindex], mailbody);// 받은 메일함 - 메일본문
+
+									// 보낸 사람의 보낸 메일함 빈칸 확인
+									for (int i = 0; i < 3; i++)
+									{
+										if (strcmp(smailbox[loginc1][i], " ") == 0)
+										{
+											sindex = i;
+										}
+									}
+
+									// 보낸 계정 메일함에 남기기
+									strcpy(smailbox[loginc1][sindex], mailtitle); // 보낸메일함 목록 표시
+									strcpy(smailtitler[loginc1][sindex], mailtitle); // 보낸메일 제목
+									strcpy(srecive[loginc1][sindex], mailids[mailf1]); // 보낸 메일함 - 받은 사람
+									strcpy(smailbodyr[loginc1][sindex], mailbody); // 보낸메일함 - 메일본문
+
+									// 메일보낸 결과 표시
+									printf("\n");
+									printf("메일이 전송되었습니다.\n");
+								}
+
+								// 메일쓰기 취소
+								if (s == 2)
+								{
+									printf("메일쓰기를 취소합니다.\n");
+								}
+								break;
+							}
+
+							// 메일 지우기
+							case 3:
+							{
+								printf("\n");
+								printf("[[ 메일 지우기 ]]");
+
+								// 메일삭제 기능 ON
+								delmail = 1;
+
+								printf("\n");
+								printf("[1.받은 메일함][2.보낸 메일함][3.취소 및 이전화면]\n");
+								printf("작업할 메일함을 선택해주세요 - ");
+								scanf("%d", &s);
+								
+								// 받은 메일함 선택
+								if (s == 1)
+								{
+									while (1)
+									{
+										goto rmbox;
+										delrmbox:
+										printf("삭제할 메일을 선택해주세요 (삭제 : 번호 // 취소 및 이전화면 : 0) - ");
+										scanf("%d", &s);
+
+										// 삭제 취소
+										if (s == 0)
+										{
+											// 메일 삭제기능 off
+											delmail = 0;
+											printf("삭제 취소하고 이전화면으로 돌아갑니다.\n");
+											break;
+										}
+
+										// 삭제할 메일 선택
+										else
+										{
+											printf("메일제목 '%s' 삭제 합니다.\n", rmailbox[loginc1][s - 1]);
+											rmailc[loginc1] = rmailc[loginc1] - 1;
+											strcpy(rmailbox[loginc1][s - 1], " ");
+											strcpy(rmailtitler[loginc1][s - 1], " ");
+											strcpy(rsend[loginc1][s - 1], " ");
+											strcpy(rmailbodyr[loginc1][s - 1], " ");
+											printf("선택한 메일을 삭제하였습니다.\n");
+											goto rmbox;
+										}
+									}
+								}
+
+								// 보낸 메일함 선택
+								if (s == 2)
+								{
+									while (1)
+									{
+										goto smbox;
+									delsmbox:
+										printf("삭제할 메일을 선택해주세요 (삭제 : 번호 // 취소 및 이전화면 : 0) - ");
+										scanf("%d", &s);
+
+										// 삭제 취소
+										if (s == 0)
+										{
+											delmail = 0;
+											printf("삭제 취소하고 이전화면으로 돌아갑니다.\n");
+											break;
+										}
+
+										// 삭제할 메일 선택
+										else
+										{
+											printf("메일제목 '%s' 삭제 합니다.\n", smailbox[loginc1][s - 1]);
+											smailc[loginc1] = smailc[loginc1] - 1;
+											strcpy(smailbox[loginc1][s - 1], " ");
+											strcpy(smailtitler[loginc1][s - 1], " ");
+											strcpy(srecive[loginc1][s - 1], " ");
+											strcpy(smailbodyr[loginc1][s - 1], " ");
+											printf("선택한 메일을 삭제하였습니다.\n");
+											goto smbox;
+										}
+									}
+								}
+
+								// 이전으로
+								if(s == 3)
+								{
+									// 메일 삭제기능 off
+									delmail = 0;
+									printf("취소하고 이전화면으로 이동합니다.\n");
+								}
+								break;
+							}
+
+							// 비밀번호 / 개인정보 변경
+							case 4:
+							{
+								printf("\n");
+								printf("비밀번호 / 개인정보를 변경합니다.\n");
+								printf("\n[1.비밀번호] [2.개인정보] [3.이전으로]\n");
+								printf("변경하려는 항목을 선택하세요 - ");
+								scanf("%d", &s);
+
+								// 비밀번호 변경
+								if (s == 1)
+								{
+									printf("비밀번호를 변경합니다.");
+									printf("우선 기존 비밀번호를 확인합니다.\n");
+									do
+									{
+										printf("기존 비밀번호 입력 - ");
+										scanf("%s", &mailpw);
+										if (strcmp(mailpws[loginc1], mailpw) == 0)
+										{
+											pwer = 0;
+										}
+										else
+										{
+											pwer = 1;
+											mealert = mealert + 1;
+											printf("비밀번호가 틀렸습니다. 다시 입력해주세요\n");
+											printf("남은 시도 횟수 - %d 회", 3 - mealert);
+											if (mealert == 3)
+											{
+												printf("모든 시도 횟수를 사용하였습니다. 로그아웃 합니다.\n");
+												break;
+											}
+										}
+									} while (pwer != 0);
+
+									// 오류치 초기화
+									pwer = 0;
+									mealert = 0;
+
+									// 새 비밀번호 입력
+									do
+									{
+										printf("새 비밀번호 입력 - ");
+										scanf("%s", &mailpw);
+										printf("새 비밀번호 확인 입력 - ");
+										scanf("%s", &mailpwc);
+
+										// 새 비밀번호 입력 확인
+										if (strcmp(mailpwc, mailpw) == 0)
+										{
+											strcpy(mailpws[loginc1], mailpwc);
+											pwer = 0;
+										}
+										else
+										{
+											pwer = 1;
+											printf("입력한 새 비밀번호가 서로 다릅니다. 다시 입력해주세요.\n");
+										}
+									} while (pwer != 0);
+
+									// 변경 결과 안내
+									printf("비밀번호가 %s 로 변경되었습니다.\n", mailpws[loginc1]);
+								}
+
+								// 개인정보 변경
+								if (s == 2)
+								{
+									// 기존 정보 확인
+									do
+									{
+										printf("\n[[ 개인정보 ]]\n");
+										printf("메일주소 - %s @mailing.com\n", mailids[loginc1]);
+										printf("이름 - %s\n", mailnames[loginc1]);
+										printf("회사이름 - %s\n", mailcomps[loginc1]);
+										printf("주민번호 - %d\n", 메일주민번호[loginc1]);
+										printf("연락처 - %d\n", mailphone[loginc1]);
+
+										// 변경할 정보 선택
+										printf("\n[1.이름] [2.회사이름] [3.주민번호] [4.연락처] [5.이전화면]\n");
+										printf("변경하려는 개인정보를 선택하세요(메일주소는 변경 불가) - ");
+										scanf("%d", &s);
+
+										// 이름 변경
+										if (s == 1)
+										{
+											printf("기존 이름 - %s\n", mailnames[loginc1]);
+											printf("변경 이름 - ");
+											scanf("%s", &mailnames[loginc1]);
+										}
+
+										// 회사이름 변경
+										if (s == 2)
+										{
+											printf("기존 회사이름 - %s\n", mailcomps[loginc1]);
+											printf("변경 회사이름 - ");
+											scanf("%s", &mailcomps[loginc1]);
+										}
+
+										// 주민번호 변경
+										if (s == 3)
+										{
+											printf("기존 주민번호(생년월일 6자리 숫자) - %d\n", 메일주민번호[loginc1]);
+											do
+											{
+												printf("변경 주민번호(생년월일 6자리 숫자) - ");
+												scanf("%d", &메일주민번호[loginc1]);
+
+												// 주민번호 자릿수 확인
+												for (int i = 메일주민번호[loginc1]; i > 0;)
+												{
+													메일주민번호[loginc1] = 메일주민번호[loginc1] / 10;
+													lc = lc + 1;
+												}
+												if (lc != 6)
+												{
+													printf("입력 내용이 주민번호 중 생년월일 6자리 숫자가 맞는지 확인해주세요\n");
+													lc = 0;
+												}
+											} while (lc != 6);
+
+											// 자릿수 자리 초기화
+											lc = 0;
+										}
+
+										// 연락처 변경
+										if (s == 4)
+										{
+											printf("기존 연락처 - %d\n", mailphone[loginc1]);
+											printf("변경 연락처 - ");
+											scanf("%d", &mailphone[loginc1]);
+										}
+
+										// 이전 메뉴로
+										if (s == 5)
+										{
+											printf("이전메뉴로 돌아갑니다.\h");
+											break;
+										}
+									} while (s != 5);
+
+								}
+
+								// 이전메뉴로
+								if (s == 3)
+								{
+									printf("이전으로 이동합니다.\n");
+								}
+								break;
+							}
+
+							// 메일시스템에서 로그아웃
+							case 5:
+							{
+
+								// 이메일 시스템에서 로그아웃
+								printf("\n");
+								printf("|| emailing.com 에서 로그아웃하였습니다. ||\n");
+								break;
+							}
+						}
+					} while (s != 5);
+					break;
+				}
+
+				// 메일시스템 회원가입
+				case 2:
+				{
+					printf("\n");
+					printf("|| emailing.com 에 회원등록합니다. ||\n");
+
+					// 빈 슬롯 찾기
+					for (int i = 0; i < 3; i++)
+					{
+						if (mailslot[i] == 0)
+						{
+							mailnslot = mailnslot + 1;
+						}
+					}
+
+					// 빈 슬롯 지정
+					mailnslot = 3 - mailnslot;
+					mailslot[mailnslot] = 1;
+
+					// ID 입력
+					do
+					{
+						printf("사용하실 ID - ");
+						scanf("%s", &mailid);
+
+						// ID 중복확인
+						for (int i = 0; i < 3; i++)
+						{
+							if (strcmp(mailids[i], mailid) == 0)
+							{
+								printf("중복되는 ID가 있습니다. 변경해주세요.\n");
+								mider = 1;
+							}
+							else
+							{
+								printf("사용가능한 ID 입니다.\n");
+								mider = 0;
+							}
+						}
+					} while (mider > 0);
+
+					// ID중복 없는 정상입력
+					strcpy(mailids[mailnslot], mailid);
+
+					// 비밀번호 입력
+					do
+					{
+						printf("사용하실 비밀번호 - ");
+						scanf("%s", &mailpw);
+
+						printf("비밀번호 확인 - ");
+						scanf("%s", &mailpwc);
+
+
+						// 비밀번호 입력 확인
+						if (strcmp(mailpw, mailpwc) == 0)
+						{
+							printf("입력값이 같습니다.\n");
+							pwer = 0;
+						}
+						else
+						{
+							pwer = 1;
+							printf("입력값이 다릅니다. 확인해주세요\n");
+						}
+					} while (pwer > 0);
+
+					// 비밀번호 정상 입력
+					strcpy(mailpws[mailnslot], mailpw);
+
+					// 개인정보 입력
+					do
+					{
+						printf("이름 - ");
+						scanf("%s", &mailnames[mailnslot]);
+						printf("회사이름 - ");
+						scanf("%s", &mailcomps[mailnslot]);
+
+						do
+						{
+							printf("주민번호 6자리 - ");
+							scanf("%d", &메일주민번호[mailnslot]);
+
+							// 주민번호 자리수 검증
+							for (int a = 메일주민번호[mailnslot]; a > 0;)
+							{
+								a = a / 10;
+								lc = lc + 1;
+							}
+							if (lc != 6)
+							{
+								printf("6자리 숫자로 입력하였는지 확인하세요\n");
+								lc = 0;
+							}
+						} while (lc != 6);
+
+						// 주민번호 이상없을시 검증 초기화
+						lc = 0;
+
+						// 연락처 입력
+						printf("연락처 - ");
+						scanf("%d", &mailphone[mailnslot]);
+
+						// 입력 확인
+						printf("\n[[ 입력 확인 ]]\n");
+						printf("입력하신 내용을 확인합니다.\n");
+						printf("ID - %s\n", mailids[mailnslot]);
+						printf("비밀번호 - %s\n", mailpws[mailnslot]);
+						printf("이름 - %s\n", mailnames[mailnslot]);
+						printf("회사이름 - %s\n", mailcomps[mailnslot]);
+						printf("주민번호 - %d\n", 메일주민번호[mailnslot]);
+						printf("연락처 - %d\n", mailphone[mailnslot]);
+
+						// 가입 완료
+						// 메일 주소 생성
+						printf("\n[[ 생성된 메일주소 ]]\n");
+						printf("%s @mailing.com\n", mailids[mailnslot]);
+						
+						// 진행 선택
+						printf("다음 사항을 선택해주세요.(1.메일 기능선택으로 갑니다.// 2.입력한 내용을 수정합니다.) - ");
+						scanf("%d", &s);
+
+						// 회원가입 완료
+						if (s == 1)
+						{
+							// 은행 회원가입에서 넘어온 경우
+							if (getmail == 1)
+							{
+								printf("은행 회원가입으로 다시 이동합니다.\n");
+								getmail = 0;
+								goto getbankacc;
+							}
+
+							else
+							{
+								printf("회원가입을 완료합니다.\n");
+								mailer = 0;
+							}
+						}
+
+						// 내용 수정
+						if (s == 2)
+						{
+							printf("입력 내용을 수정합니다.\n");
+							mailer = 1;
+						}
+					} while (mailer > 0);
+
+					// 회원가입 완료
+					if (mailer == 0)
+					{
+						printf("메일 회원가입이 완료되었습니다. 메일 로그인 화면으로 이동합니다.");
+						break;
+					}
+				}
+
+				// 메일시스템 계정찾기
+				case 3:
+				{
+					printf("|| emailing.com 에 등록된 계정을 찾습니다. ||\n");
+					printf("찾으려는 항목을 선택하세요. (1.ID // 2.비밀번호) - ");
+					scanf("%d", &s);
+
+					// ID 찾기
+					if (s == 1)
+					{
+						do
+						{
+							printf("\n[[ ID 찾기 ]]\n");
+							printf("찾으려는 ID의 이름 - ");
+							scanf("%s", &mailname);
+							printf("찾으려는 ID의 연락처 - ");
+							scanf("%d", &mailf1);
+
+							// 일치정보 검색
+							for (int i = 0; i < 3; i++)
+							{
+								// 이름 찾기
+								if (strcmp(mailnames[i], mailname) == 0)
+								{
+									mfr1 = 0;
+									mfslot1 = i;
+								}
+								else
+								{
+									mfr1 = mfr1 + 1;
+								}
+
+								// 연락처 찾기
+								if (mailphone[i] == mailf1)
+								{
+									mfr2 = 0;
+									mfslot2 = i;
+								}
+								else
+								{
+									mfr2 = mfr2 + 1;
+								}
+							}
+
+							// 검색 결과 표시
+
+							// 이름 검색 결과 없음
+							if (mfr1 > 2)
+							{
+								printf("일치하는 이름이 없습니다.\n");
+							}
+							if (mfr2 > 2)
+							{
+								printf("일치하는 연락처가 없습니다.\n");
+							}
+							if (mfslot1 == mfslot2)
+							{
+								printf("\n[[ ID 찾기 결과 ]]\n");
+								printf("이름 - %s\n", mailnames[mfslot1]);
+								printf("회사이름 - %s\n", mailcomps[mfslot1]);
+								printf("연락처 - %d\n", mailphone[mfslot1]);
+								printf("\n등록된 ID - %s\n", mailids[mfslot1]);
+							}
+							printf("위의 내용이 맞습니까? (1.예/2.아니오) - ");
+							scanf("%d", &s);
+							if (s == 1)
+							{
+								printf("메일시스템 로그인으로 돌아갑니다.\n");
+								goto mailsys;
+							}
+							if (s == 2)
+							{
+								printf("ID찾기로 돌아갑니다.\n");
+							}
+						} while (s == 2);
+					}
+
+					// PW 찾기
+					if (s == 2)
+					{
+						do
+						{
+							printf("\n[[ 비밀번호 찾기 ]]\n");
+							printf("찾으려는 비밀번호의 ID - ");
+							scanf("%s", &mailid);
+							printf("찾으려는 비밀번호의 주민번호 6자리 - ");
+							scanf("%d", &mailf1);
+
+							// 일치 정보 찾기
+							for (int i = 0; i < 3; i++)
+							{
+								// ID 검색
+								if (strcmp(mailids[i], mailid) == 0)
+								{
+									mfr1 = 0;
+									mfslot1 = i;
+								}
+								else
+								{
+									mfr1 = mfr1 + 1;
+								}
+
+								// 주민번호 검색
+								if (메일주민번호[i] == mailf1)
+								{
+									mfr2 = 0;
+									mfslot2 = i;
+								}
+								else
+								{
+									mfr2 = mfr2 + 1;
+								}
+							}
+
+							// 찾은 결과
+							printf("[[ 비밀번호 찾기 결과 ]]\n");
+							// 일치하는 ID 없음
+							if (mfr1 > 2)
+							{
+								printf("일치하는 ID가 없습니다.\n");
+							}
+
+							// 일치하는 주민번호 없음
+							if (mfr2 > 2)
+							{
+								printf("일치하는 주민번호가 없습니다.\n");
+								mealert = mealert + 1;
+
+								// 찾기 시도 횟수
+								if (mealert == 3)
+								{
+									printf("찾기 시도횟수를 모두 사용하여 종료합니다.\n");
+									return 0;
+								}
+								else
+								{
+									printf("총 3회 시도 중 %d 회 실패하였습니다. 남은 시도 - %d 회", mealert, 3 - mealert);
+								}
+							}
+
+							// 일치 정보 확인
+							if (mfslot1 == mfslot2)
+							{
+								printf("iD - %s\n", mailids[mfslot1]);
+								printf("이름 - %s\n", mailnames[mfslot1]);
+								printf("회사이름 - %s\n", mailcomps[mfslot1]);
+								printf("찾은 비밀번호 - %d\n", mailpws[mfslot1]);
+							}
+							printf("찾은 정보가 맞습니까? (1.예 // 2.아니오) - ");
+							scanf("%d", &s);
+							if (s == 1)
+							{
+								printf("메일시스템 로그인으로 돌아갑니다.\n");
+								goto mailsys;
+							}
+							if (s == 2)
+							{
+								printf("비밀번호 찾기로 돌아갑니다.\hn");
+							}
+						} while (s == 2);
+					}
+					break;
+				}
+
+				// 메일시스템에서 나가기
+				case 4:
+				{
+					printf("\n");
+					printf("초기 선택화면으로 이동합니다.\n");
+					goto login_select;
+					break;
+				}
+			}
+		}
+	}
+
+	// 프로그램 종료
+	if (s == 3)
+	{
+		printf("프로그램을 종료합니다.\n");
+		return 0;
+	}
+}
