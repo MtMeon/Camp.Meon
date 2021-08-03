@@ -1,0 +1,815 @@
+#include<stdio.h>
+
+int main()
+{
+  int s, cs, day, bday, days[5] = { 0, }, bkday[5][4] = { {0, }, }, bkc, bka = 0, cat1 = 0, cat2 = 0, rentcat, srcher = 0, rm, rms[5] = { 0, }, index[5] = { 0, }, slot = 5, dayslot = 0, rrms[5] = { 0, };
+	char tsrch[50] = { "" }, wsrch[50] = { "" }, rsrch[50], title[50], wname[50], rname[50], lname[50], booktitles[5][50] = { "","","","","" }, bookwnames[5][50] = { "","","","","" }, bookrnames[5][50] = { "","","","","" },
+		bkbook[5][2][50] = { {"",""},{"",""},{"",""},{"",""},{"",""} },
+		bkorder[5][3][50] = { {"","",""},{"","",""},{"","",""},{"","",""},{"","",""} },
+		bkrent[5][3][50] = { {"","",""},{"","",""},{"","",""},{"","",""},{"","",""} };
+
+	// bkday구성 - [건수][날짜, 예약 3종 건수] / bkbook구성 - [건수][제목, 저자순] / bkorder 구성 - [건수][제목,저자,출고지] / bkrent 구성 - [건수][제목,저자,대여자 이름 순]
+
+	// 프로그램 제목
+	printf("== 도서 관리프로그램 ==\n");
+
+
+	while (1)
+	{
+	inputday:
+
+		// 오늘날짜 입력
+		printf("오늘 날짜를 입력해주세요(예시.20210709)\n");
+		printf("입력 - ");
+		scanf("%d", &day);
+
+		// 날짜 입력값이 이상한 경우
+		if (day < 20210101)
+		{
+			printf("\n날짜 입력을 확인해주세요.\n");
+		}
+
+		// 날짜 입력값이 정상인 경우 안내
+		else
+		{
+			printf("\n입력하신 날짜는 %d 입니다.\n", day);
+		}
+
+		// 예약 적용 모듈 - 날짜 입력 후 예약 데이터 적용 모듈 필요
+		for (int i = 0; i < 5; i++)
+		{
+			// 입력된 날짜가 예약일 중에 하나와 같은 경우
+			if (bkday[i][0] == day)
+			{
+				bka = i;
+			}
+		}
+
+		// 총 예약건수 계산
+		bkc = bkday[bka][1] + bkday[bka][2] + bkday[bka][3];
+
+		// 총 예약건수가 있는 경우 알림 발생
+		if (bkc > 0)
+		{
+			// 예약된 항목 알림
+			printf("\n[[ 예약 항목 알림 (날짜 - %d) ]]\n", bkday[bka][0]);
+
+			// 예약 총 건수 표시
+			printf("(총 예약 건수 - %d 건)\n", bkc);
+			printf("\n[[ 예약 항목별 세부내용 ]]\n");
+			printf("========================================\n");
+			// 출간예약이 있는 경우
+			if (bkday[bka][1] > 0)
+			{
+				printf("\n( 출간 예약 - %d 건 )\n", bkday[bka][1]);
+				printf("도서 제목 - %s\n", bkbook[bka][0]);
+				printf("도서 저자 - %s\n", bkbook[bka][1]);
+			}
+
+			// 예약 주문이 있는 경우
+			if (bkday[bka][2] > 0)
+			{
+				printf("\n( 주문 예약 - %d 건 )\n", bkday[bka][2]);
+				printf("도서 제목 - %s\n", bkorder[bka][0]);
+				printf("저자 - %s\n", bkorder[bka][1]);
+				printf("출고지 - %s\n", bkorder[bka][2]);
+			}
+
+			// 대여 예약이 있는 경우
+			if (bkday[bka][3] > 0)
+			{
+				printf("\n( 대여 예약 - %d 건 )\n", bkday[bka][3]);
+				printf("도서 제목 - %s\n", bkrent[bka][0]);
+				printf("저자 - %s\n", bkrent[bka][1]);
+				printf("대여자 이름 - %s\n", bkrent[bka][2]);
+				printf("대여료 - %d\n", rrms[bka]);
+			}
+			printf("========================================\n");
+
+			// 예약적용 여부 확인
+			printf("\n위 내용들을 적용하겠습니까? (1.적용 / 2.취소) - ");
+			scanf("%d", &s);
+
+			// 예약 내용 적용
+
+			printf("\n[[ 예약 적용 결과 ]]\n");
+			if (s == 1)
+			{
+				printf("\n=================================\n");
+				// 출간예약이 있는 경우
+				if (bkday[bka][1] > 0)
+				{
+					// 예약된 출간도서를 도서목록에 적용하기 위한 슬롯 찾기
+					for (int i = 4; i >= 0; i--)
+					{
+						if (index[i] == 0)
+						{
+							slot = i;
+						}
+						else
+						{
+							slot = slot;
+						}
+					}
+
+					// 데이터 적용
+					strcpy(booktitles[slot], bkbook[bka][0]);
+					strcpy(bookwnames[slot], bkbook[bka][1]);
+
+					// 적용 결과 표시
+					printf("\n(1.출간 예약 적용 결과)\n");
+					printf("도서 제목 - %s\n", booktitles[slot]);
+					printf("도서 저자 - %s\n", bookwnames[slot]);
+
+					// 목록에 추가되어 슬롯 사용 적용
+					index[slot] = 1;
+
+					// 적용 후 해당 슬롯 비우기
+					strcpy(bkbook[bka][0], "");
+					strcpy(bkbook[bka][1], "");
+
+					// 출간 예약 건수 초기화
+					bkday[bka][1] = 0;
+				}
+
+				// 예약 주문이 있는 경우
+				if (bkday[bka][2] > 0)
+				{
+					// 예약 주문을 도서목록에 적용하기 위한 슬롯 찾기
+					for (int i = 4; i >= 0; i--)
+					{
+						if (index[i] == 0)
+						{
+							slot = i;
+						}
+						else
+						{
+							slot = slot;
+						}
+					}
+
+					// 데이터 적용
+					strcpy(booktitles[slot], bkorder[bka][0]);
+					strcpy(bookwnames[slot], bkorder[bka][1]);
+
+					// 적용 결과 표시
+					printf("\n(2. 주문 예약 적용 결과)\n");
+					printf("도서 제목 - %s\n", booktitles[slot]);
+					printf("도서 저자 - %s\n", bookwnames[slot]);
+
+					// 도서 목록에 추가되어 슬롯 사용 표시
+					index[slot] = 1;
+
+					// 적용 후 해당 슬롯 비우기
+					strcpy(bkorder[bka][0], "");
+					strcpy(bkorder[bka][1], "");
+
+					// 예약주문 건수 초기화
+					bkday[bka][2] = 0;
+				}
+
+				// 대여 예약이 있는 경우
+				if (bkday[bka][3] > 0)
+				{
+					// 대여 책자 검색
+					for (int i = 0; i < 5; i++)
+					{
+						if (strcmp(booktitles[i], bkrent[bka][0]) == 0)
+						{
+							rentcat = i;
+						}
+					}
+
+					// 데이터 적용
+					strcpy(bookrnames[rentcat], bkrent[bka][2]);
+					rms[rentcat] = rrms[bka];
+
+					// 적용 결과 표시
+					printf("\n(3.대여 예약 적용 결과)\n");
+					printf("도서 제목 - %s\n", booktitles[rentcat]);
+					printf("저자 - %s\n", bookwnames[rentcat]);
+					printf("대여자 이름 - %s\n", bookrnames[rentcat]);
+					printf("대여료 - %d\n", rms[rentcat]);
+
+					// 적용 후 해당 슬롯 비우기
+					strcpy(bkrent[bka][0], "");
+					rrms[bka] = 0;
+
+					// 대여 예약 건수 초기화
+					bkday[bka][3] = 0;
+				}
+
+				// 예약 일정초기화
+				bkday[bka][0] = 0;
+
+
+				printf("\n=================================\n");
+			}
+
+			// 예약 내용 취소
+			if (s == 2)
+			{
+				printf("예약내용을 취소합니다.\n");
+			}
+
+		}
+
+		// 도서 검색
+		do
+		{
+		book_srch:
+			printf("\n( 도서 검색 )\n");
+			printf("검색하는 정보를 선택하세요\n");
+			printf("[1.책 제목] [2.저자 이름] [3. 대여한 사람]\n");
+			printf("선택 항목 - ");
+			scanf("%d", &s);
+
+			// 검색 - 책 제목
+			if (s == 1)
+			{
+				printf("책 제목 - ");
+				scanf("%s", &tsrch);
+
+				// 제목 검색
+				for (int i = 0; i < 5; i++)
+				{
+					if (strcmp(booktitles[i], tsrch) == 0)
+					{
+						cat1 = i;
+						srcher = 0;
+					}
+					else
+					{
+						srcher = srcher + 1;
+					}
+				}
+			}
+
+			// 검색 - 저자 이름
+			else if (s == 2)
+			{
+				printf("저자 이름 - ");
+				scanf("%s", &wsrch);
+				for (int i = 0; i < 5; i++)
+				{
+					if (strcmp(bookwnames[i], wsrch) == 0)
+					{
+						cat1 = i;
+						srcher = 0;
+					}
+					else
+					{
+						srcher = srcher + 1;
+					}
+				}
+			}
+
+			// 검색 - 대여한 사람
+			else if (s == 3)
+			{
+				printf("대여자 이름 - ");
+				scanf("%s", rsrch);
+				for (int i = 0; i < 5; i++)
+				{
+					if (strcmp(bookrnames[i], rsrch) == 0)
+					{
+						cat1 = i;
+						srcher = 0;
+					}
+					else
+					{
+						srcher = srcher + 1;
+					}
+				}
+			}
+
+			// 잘못 입력한 경우
+			else
+			{
+				printf("입력을 확인해주세요.\n");
+			}
+
+		} while (s > 3);
+
+
+
+		// 검색 결과
+		printf("\n[ 도서 검색결과 ]\n");
+
+		// 검색 결과 없을때 표시
+		if (srcher > 4)
+		{
+			printf("해당 검색 결과 - 없습니다.\n");
+		}
+
+		// 검색 결과 있을때 표시
+		else
+		{
+			printf("책 제목 - %s\n", booktitles[cat1]);
+			printf("책 저자 - %s\n", bookwnames[cat1]);
+			if (strcmp(bookrnames[cat1], "") != 0)
+			{
+				printf("대여자 이름 - %s\n", bookrnames[cat1]);
+				printf("대여 요금 - %d\n", rms[cat1]);
+			}
+		}
+
+
+		// 도서관리기능
+		while (1)
+		{
+			printf("\n[[도서관리항목]]\n");
+			printf("[1.도서 추가] [2.도서 대여] [3.도서 삭제] [4.도서 목록] [5. 예약] [6. 도서 재검색] [7. 날짜 전환] [0. 종료]\n");
+			printf("기능 선택 - ");
+			scanf("%d", &s);
+
+			// 기능 선택
+			switch (s)
+			{
+				// 도서 추가
+				case 1:
+				{
+					printf("\n[[ 도서 추가 ]]\n");
+
+					// 예약 적용시 슬롯이 사용될 수 있으니 빈 슬롯을 재탐색
+					for (int i = 4; i >= 0; i--)
+					{
+						if (index[i] == 0)
+						{
+							slot = i;
+						}
+						else
+						{
+							slot = slot;
+						}
+					}
+
+					printf("* 현재 선택된 빈 슬롯은 %d 입니다. *\n", slot + 1);
+					printf("\n[1.검색했던 도서를 추가] [2.도서 추가]\n");
+					printf("위 항목에서 도서 추가 방식 선택 - ");
+					scanf("%d", &s);
+
+					// 초기 화면에서 검색했던 도서를 추가
+					if (s == 1)
+					{
+						printf("\n검색한 도서를 추가합니다.\n");
+
+						// 제목으로 검색한 경우 저자만 추가 입력
+						if (strcmp(tsrch, "") != 0)
+						{
+							printf("\n검색한 도서 제목 - %s\n", tsrch);
+
+							// 검색한 제목을 저장항목에 복사
+							strcpy(title, tsrch);
+
+							printf("해당 도서 저자 - ");
+							scanf("%s", &wname);
+						}
+
+						// 저자로 검색한 경우 제목만 추가 입력
+						if (strcmp(wsrch, "") != 0)
+						{
+							printf("검색한 도서 저자 - %s\n", wsrch);
+
+							// 검색한 저자를 저장항목에 복사
+							strcpy(wname, wsrch);
+
+							printf("해당 도서 제목 - ");
+							scanf("%s", &title);
+						}
+
+					}
+
+					// 일반적인 도서 추가
+					if (s == 2)
+					{
+						printf("책 제목 - ");
+						scanf("%s", &title);
+						printf("책 저자 - ");
+						scanf("%s", &wname);
+					}
+
+					// 저장 재확인
+					printf("저장하시겠습니까? (1.예 / 2.아니오) - ");
+					scanf("%d", &s);
+
+					// 도서 추가 저장
+					if (s == 1)
+					{
+						strcpy(booktitles[slot], title);
+						strcpy(bookwnames[slot], wname);
+						printf("책 제목 - %s\n", booktitles[slot]);
+						printf("책 저자 - %s\n", bookwnames[slot]);
+
+						// 슬롯 사용 표식 및 변경
+						index[slot] = 1;
+
+						printf("저장되었습니다.\n");
+					}
+
+					// 도서 추가 취소
+					if (s == 2)
+					{
+						printf("책 추가를 취소하였습니다.\n");
+					}
+					break;
+				}
+
+				// 도서 대여
+				case 2:
+				{
+
+					// 대여도서 선택
+					printf("\n[[ 대여 도서 찾기 ]]\n");
+					printf("[1.현재 검색된 도서 대여][2.도서 대여 검색]\n");
+					printf("항목선택 - ");
+					scanf("%d", &s);
+
+					// 현재 검색된 도서 대여
+					if (s == 1)
+					{
+						printf("\n[[ 현재 검색된 도서 ]]\n");
+						printf("책 제목 - %s\n", booktitles[cat1]);
+						printf("책 저자 - %s\n", bookwnames[cat1]);
+
+						// 이미 대여된 책인 경우
+						if (strcmp(bookrnames[cat1], "") != 0)
+						{
+							printf("이미 대여된 책 입니다.\n");
+						}
+						else
+						{
+							printf("대여 등록을 진행합니다.\n");
+						}
+					}
+
+					// 대여할 도서 개별 검색
+					if (s == 2)
+					{
+						printf("제목 검색 - ");
+						scanf("%s", &title);
+						for (int i = 0; i < 5; i++)
+						{
+							if (strcmp(booktitles[i], title) == 0)
+							{
+								cat2 = i;
+							}
+						}
+						printf("\n[[ 검색결과 ]]\n");
+						printf("제목 - %s\n", booktitles[cat2]);
+						printf("저자 - %s\n", bookwnames[cat2]);
+
+						// 이미 대여된 책인 경우
+						if (strcmp(bookrnames[cat2], "") != 0)
+						{
+							printf("이미 대여된 책 입니다.\n");
+						}
+						else
+						{
+							printf("대여 등록을 진행합니다.\n");
+						}
+					}
+
+					// 대여 진행
+					printf("\n[[ 대여 등록 ]]\n");
+					printf("대여자 이름 - ");
+					scanf("%s", &rname);
+					printf("대여비 - ");
+					scanf("%d", &rm);
+					if (rm < 0)
+					{
+						printf("입력한 금액을 확인해주세요\n");
+					}
+					else
+					{
+						printf("저장하시겠습니까? (1.예 / 2.취소) - ");
+						scanf("%d", &s);
+					}
+
+					// 대여 저장
+					if (s == 1)
+					{
+						strcpy(bookrnames[cat1], rname);
+						rms[cat1] = rm;
+						printf("\n[[ 대여 결과 ]]\n");
+						printf("책 제목 - %s\n", booktitles[cat1]);
+						printf("책 저자 - %s\n", bookwnames[cat1]);
+						printf("대여자 이름 - %s\n", bookrnames[cat1]);
+						printf("대여비 - %d 원\n", rms[cat1]);
+					}
+
+					// 대여 취소
+					if (s == 2)
+					{
+						printf("\n[[ 대여 취소 ]]\n");
+						printf("대여를 취소합니다.\n");
+					}
+					break;
+				}
+
+				// 도서 삭제
+				case 3:
+				{
+					printf("\n[[ 도서 삭제 ]]\n");
+					printf("[1.검색된 도서 삭제] [2.삭제할 도서 재지정]\n");
+					printf("항목선택 - ");
+					scanf("%d", &s);
+
+					// 지금 검색된 도서 삭제
+					if (s == 1)
+					{
+						printf("현재 검색된 도서를 삭제합니다.\n");
+						cat2 = cat1;
+					}
+
+					// 이외의 도서 삭제
+					if (s == 2)
+					{
+						printf("삭제 할 도서를 검색해주세요\n");
+						printf("책 제목 - ");
+						scanf("%s", &title);
+
+						// 동일제목 검색기
+						for (int i = 0; i < 5; i++)
+						{
+							if (strcmp(bookrnames[i], title) == 0)
+							{
+								cat2 = i;
+							}
+						}
+					}
+
+					// 검색 결과
+					printf("\n[검색 결과]\n");
+
+					// 검색 결과 없음
+					if (cat2 == 6)
+					{
+						printf("\n없습니다.\n");
+					}
+
+					// 검색 결과 있음
+					else
+					{
+						printf("책 제목 - %s\n", booktitles[cat2]);
+						printf("책 저자 - %s\n", bookwnames[cat2]);
+						// 검색 결과 - 대여 여부 표시
+						if (strcmp(bookrnames[cat2], "") != 0)
+						{
+							printf("대여자 이름 - %s\n", bookrnames[cat2]);
+							printf("대여료 - %d\n", rms[cat2]);
+
+							// 대여한 사람이 있을 경우 삭제전 경고
+							printf("\n대여한 사람이 있는 상태입니다.\n");
+						}
+
+						// 삭제전 확인
+						printf("삭제하겠습니까? (1.예 // 2.취소) - ");
+						scanf("%d", &s);
+
+						// 삭제
+						if (s == 1)
+						{
+							strcpy(booktitles[cat2], "");
+							strcpy(bookwnames[cat2], "");
+							strcpy(bookrnames[cat2], "");
+							rms[cat2] = 0;
+							index[cat2] = 0;
+							printf("\n삭제되었습니다.\n");
+						}
+
+						// 삭제 취소
+						if (s == 2)
+						{
+							printf("삭제를 취소합니다.\n");
+						}
+					}
+					break;
+				}
+
+				//보유 도서 목록
+				case 4:
+				{
+					printf("\n[[ 현재 보유 도서목록 ]]\n");
+					printf("\n==============================\n");
+					for (int i = 0; i < 5; i++)
+					{
+
+						// 목록 출력 형태 - [제목][저자][(있는경우)대여자][(있을경우)대여료]
+						if (strcmp(booktitles[i], "") != 0)
+						{
+							printf("[등록번호 %d] | ", i + 1);
+							printf("[책 제목 - %s] ", booktitles[i]);
+							printf("[책 저자 - %s] ", bookwnames[i]);
+						}
+						if (strcmp(bookrnames[i], "") != 0)
+						{
+							printf("[대여자 - %s] ", bookrnames[i]);
+							printf("[대여료 - %d] ", rms[i]);
+						}
+						printf("\n");
+					}
+					printf("==============================\n");
+					break;
+				}
+
+				// 도서 예약
+				case 5:
+				{
+					printf("\n[[ 예약 기능 ]]\n");
+					printf("\n[1.예약하기][2.이전으로]\n");
+					printf("기능 선택 - ");
+					scanf("%d", &s);
+
+					// 예약하기
+					if (s == 1)
+					{
+						// 예약 전용 빈 슬롯 찾기
+						for (int i = 4; i >= 0; i--)
+						{
+							if (bkday[i] == 0)
+							{
+								dayslot = i;
+							}
+							else
+							{
+								dayslot = dayslot;
+							}
+						}
+
+						// 예약일 지정
+						printf("예약일 입력 (예시.20210101) - ");
+						scanf("%d", &bday);
+
+						// 예약 기능
+						do
+						{
+							printf("\n( 예약 지정 날짜 - %d )\n", bday);
+							printf("\n[1.출간 예약][2.예약 주문][3.대여 예약][4.이전으로]\n");
+							printf("예약하려는 항목을 선택하세요 - ");
+							scanf("%d", &s);
+
+							// 출간 예약
+							if (s == 1)
+							{
+								printf("\n( 출간 예약 )\n");
+								printf("출간 도서 제목 - ");
+								scanf("%s", &title);
+								printf("도서 저자 - ");
+								scanf("%s", &wname);
+
+								printf("\n출간 예약 확정하겠습니까? (1.확정 // 2.취소) - ");
+								scanf("%d", &s);
+
+								// 출간 예약 확정
+								if (s == 1)
+								{
+									bkday[dayslot][0] = bday;
+									bkday[dayslot][1] = bkday[dayslot][1] + 1;
+									strcpy(bkbook[dayslot][0], title);
+									strcpy(bkbook[dayslot][1], wname);
+
+									printf("\n[[ 출간 예약 결과 ]]\n");
+									printf("예약일 - %d\n", bkday[dayslot][0]);
+									printf("출간 도서 제목 - %s\n", bkbook[dayslot][0]);
+									printf("도서 저자 - %s\n", bkbook[dayslot][1]);
+								}
+
+								// 출간 예약 취소
+								if (s == 2)
+								{
+									printf("\n출간 예약을 취소합니다.\n");
+								}
+							}
+
+							// 예약 주문
+							if (s == 2)
+							{
+								printf("\n( 주문 예약 )\n");
+								printf("도서 제목 - ");
+								scanf("%s", &title);
+								printf("도서 저자 - ");
+								scanf("%s", &wname);
+								printf("출고지 - ");
+								scanf("%s", &lname);
+
+								printf("\n주문 예약을 확정하겠습니까? (1.확정 // 2.취소) - ");
+								scanf("%d", &s);
+
+								// 주문 예약 확정
+								if (s == 1)
+								{
+									bkday[dayslot][0] = bday;
+									bkday[dayslot][2] = bkday[dayslot][2] + 1;
+									strcpy(bkorder[dayslot][0], title);
+									strcpy(bkorder[dayslot][1], wname);
+									strcpy(bkorder[dayslot][2], lname);
+
+									printf("\n[[ 주문 예약 결과]]\n");
+									printf("예약일 - %d\n", bkday[dayslot][0]);
+									printf("도서 제목 - %s\n", bkorder[dayslot][0]);
+									printf("도서 저자 - %s\n", bkorder[dayslot][1]);
+									printf("출고지 - %s\n", bkorder[dayslot][2]);
+								}
+
+								// 주문 예약 취소
+								if (s == 2)
+								{
+									printf("\n주문 예약을 취소합니다.\n");
+								}
+
+							}
+
+							// 대여 예약
+							if (s == 3)
+							{
+								printf("\n( 대여 예약 )\n");
+								printf("도서 제목 - ");
+								scanf("%s", &title);
+								printf("도서 저자 - ");
+								scanf("%s", &wname);
+								printf("대여자 이름 - ");
+								scanf("%s", &rname);
+								printf("대여료 - ");
+								scanf("%d", &rm);
+
+								printf("\n대여 예약 확정하겠습니까? (1.확정 / 2.취소) - ");
+								scanf("%d", &s);
+
+								// 대여 예약 확정
+								if (s == 1)
+								{
+									bkday[dayslot][0] = bday;
+									bkday[dayslot][3] = bkday[dayslot][3] + 1;
+									strcpy(bkrent[dayslot][0], title);
+									strcpy(bkrent[dayslot][1], wname);
+									strcpy(bkrent[dayslot][2], rname);
+									rrms[dayslot] = rm;
+
+									printf("\n[[ 대여 예약 결과 ]]\n");
+									printf("예약일 - %d\n", bkday[dayslot][0]);
+									printf("도서 제목 - %s\n", bkrent[dayslot][0]);
+									printf("도서 저자 - %s\n", bkrent[dayslot][1]);
+									printf("대여자 이름 - %s\n", bkrent[dayslot][2]);
+									printf("대여료 - %d\n", rrms[dayslot]);
+								}
+
+								// 대여 예약 취소
+								if (s == 2)
+								{
+									printf("\n대여 예약을 취소합니다.\n");
+								}
+							}
+
+							// 이전으로
+							if (s == 4)
+							{
+								printf("이전으로 돌아갑니다.");
+							}
+						} while (s != 4);
+					}
+
+					// 이전으로
+					if (s == 2)
+					{
+						printf("\n이전으로 돌아갑니다.\n");
+					}
+					break;
+				}
+
+				// 도서 재검색
+				case 6:
+				{
+					printf("도서 검색으로 이동합니다.\n");
+					goto book_srch;
+				}
+
+				// 날짜변경
+				case 7:
+				{
+					printf("\n[[ 날짜 변경 ]]\n");
+					printf("현재 날짜 - %d 입니다.\n", day);
+					printf("날짜 변경하겠습니까? (1.변경/2.취소) - ");
+					scanf("%d", &s);
+					if (s == 1)
+					{
+						printf("\n날짜를 변경합니다.\n");
+						goto inputday;
+					}
+					else
+					{
+						printf("현재 날짜를 유지합니다.\n");
+					}
+					break;
+				}
+
+				// 종료
+				case 0:
+				{
+					printf("프로그램을 종료합니다.\n");
+					return 0;
+				}
+			}
+		}
+	}
+}
