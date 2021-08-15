@@ -1,0 +1,75 @@
+#include <stdio.h>
+
+int main()
+{
+	int divn = 0, dtcd, zzak, end;
+
+	printf("= 369 게임 =\n");
+	printf("게임의 마지막 숫자를 입력해주세요 - ");
+	scanf("%d", &end);
+
+	for (int i = 1; i <= end; i++)
+	{
+		divn = i;
+		zzak = 0;
+		while (1)
+		{
+			
+			if (divn < 10)
+			{
+				if (divn == 3)
+				{
+					zzak = zzak + 1;
+				}
+				else if (divn == 6)
+				{
+					zzak = zzak + 1;
+				}
+				else if (divn == 9)
+				{
+					zzak = zzak + 1;
+				}
+				else
+				{
+					zzak = zzak;
+				}
+				break;
+			}
+			else
+			{
+
+				dtcd = divn % 10;
+				if (dtcd == 3)
+				{
+					zzak = zzak + 1;
+				}
+				else if (dtcd == 6)
+				{
+					zzak = zzak + 1;
+				}
+				else if (dtcd == 9)
+				{
+					zzak = zzak + 1;
+				}
+				else
+				{
+					zzak = zzak;
+				}
+				divn = divn / 10;
+			}
+		}
+
+		if (zzak > 0)
+		{
+			for (int i = 0; i < zzak; i++)
+			{
+				printf("짝");
+			}
+			printf(" ");
+		}
+		else
+		{
+			printf(" %d ", i);
+		}
+	}
+}
