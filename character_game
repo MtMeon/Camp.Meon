@@ -1,0 +1,864 @@
+#include<stdio.h>
+#include<Time.h>
+#include<stdlib.h>
+
+struct sys
+{
+	int num;
+	char del[20];
+};
+
+// 캐릭터 정보
+struct cinfo
+{
+	int c, sign[3], point[11][2][7], dps[11][2][7], ppoint[11], inputn, max[11], add[11][4];
+	// [캐릭터번호][초기, 현재][레벨, 힘, 민첩, 지능, 운, 경험치, 필요경험치]
+	// [캐릭터번호][초기, 현재][체력, 최대뎀, 이속, 공속, 마나, 최대마뎀, 경험치 보너스]
+	char text[11][20], inputt[10];
+};
+
+// 월드
+struct world
+{
+	int get[6], lvlimit[6], getexp;
+};
+
+main()
+{	
+	struct sys count, slt;
+	struct cinfo slot, name, state, up, exp;
+	struct world field;
+
+	// 초기값
+	for (int i = 0; i < 11; i++)
+	{
+		for (int t = 0; t < 4; t++)
+		{
+			state.add[i][t] = 0;
+		}
+	}
+
+
+	for (int i = 0; i < 6; i++)
+	{
+		field.get[i] = 0;
+		field.lvlimit[i] = 0;
+	}
+
+	state.inputn = 0;
+	strcpy(state.inputt, "");
+
+	// 경험치
+	for (int i = 0; i < 11; i++)
+	{
+		exp.max[i] = 0;
+	}
+	
+	count.num = 10;
+	slt.num = 0;
+	slot.c = 0;
+	up.c = 0;
+	field.getexp = 0;
+
+	for (int i = 0; i < 11; i++)
+	{
+		strcpy(name.text[i], "");
+	}
+
+	// 캐릭터 번호 및 스텟 초기화
+	for (int i = 0; i < 11; i++)
+	{
+		for (int t = 0; t < 2; t++)
+		{
+			for (int k = 0; k < 7; k++)
+			{
+				state.point[i][t][k] = 0;
+			}
+		}
+	}
+	// dps 초기화
+	for (int i = 0; i < 11; i++)
+	{
+		for (int t = 0; t < 2; t++)
+		{
+			for (int k = 0; k < 7; k++)
+			{
+				state.dps[i][t][k] = 0;
+			}
+		}
+	}
+
+
+	// 분배 스텟 포인트
+	for (int i = 0; i < 11; i++)
+	{
+		state.ppoint[i] = 30;
+	}
+	
+
+	while (1)
+	{
+		printf("\n[[ 캐릭터 키우기 ]]\n\n");
+
+		// 생성된 캐릭터 목록
+		printf("\n[ 현재 캐릭터 목록 ]\n");
+		printf("===========================================================\n");
+		for (int i = 1; i < 11; i++)
+		{
+			if (strcmp(name.text[i], "") != 0)
+			{
+				printf("슬롯 %d 번 [ 닉네임 - %s ][ 레벨 - %d ]\n", i, name.text[i], state.point[i][1][0]);
+			}
+			else
+			{
+				printf(" ");
+			}
+		}
+		printf("\n===========================================================\n");
+		printf("\n");
+
+		// 항목 선택하기
+		printf("\n[ 1. 캐릭터 로그인 ][ 2. 캐릭터 생성 ][ 3. 캐릭터 삭제 ][ 0. 종료 ]\n");
+		printf("\n항목 선택 - ");
+		scanf("%d", &slt.num);
+
+		// 종료하기
+		if (slt.num == 0)
+		{
+			printf("게임을 종료합니다.\n");
+			return 0;
+		}
+
+		// 캐릭터 로그인
+		else if (slt.num == 1)
+		{
+			while(1)
+			{
+				printf("\n[ 캐릭터 로그인 ]\n");
+				if (count.num < 10)
+				{
+					// 캐릭터 선택 기능으로 돌아올 경우 캐릭터 목록 띄우기
+					if (slt.num == 3)
+					{
+						printf("\n( 캐릭터 목록 )\n");
+						printf("===========================================\n");
+						for (int i = 1; i < 11; i++)
+						{
+							if (strcmp(name.text[i], "") != 0)
+							{
+								printf("%d 번 - [ %s ][ 레벨 - %d ]\n", i, name.text[i], state.point[i][1][0]);
+							}
+						}
+						printf("===========================================\n");
+					}
+					
+					// 접속할 캐릭터 선택
+					printf("접속할 캐릭터 슬롯 번호를 입력하세요 - ");
+					scanf("%d", &slot.c);
+
+					if (slot.c > 10)
+					{
+						printf("잘못된 입력입니다. 확인하세요\n");
+					}
+
+					// 선택한 캐릭터 접속
+					else
+					{
+						printf("%d 번 캐릭터가 선택되었습니다.\n", slot.c);
+
+						printf("\n( 캐릭터 미리보기 )\n");
+						printf("ㆍ닉네임 - %s\n", name.text[slot.c]);
+						printf("ㆍ레벨 - %d\n", state.point[slot.c][1][0]);
+						printf("ㆍ힘 - %d (+ %d) / ", state.point[slot.c][0][1], state.point[slot.c][1][1] - state.point[slot.c][0][1]);
+						printf("ㆍ민첩 - %d (+ %d) / ", state.point[slot.c][0][2], state.point[slot.c][1][2] - state.point[slot.c][0][2]);
+						printf("ㆍ지능 - %d (+ %d) / ", state.point[slot.c][0][3], state.point[slot.c][1][3] - state.point[slot.c][0][3]);
+						printf("ㆍ운 - %d (+ %d)\n", state.point[slot.c][0][4], state.point[slot.c][1][4] - state.point[slot.c][0][4]);
+
+						printf("\n[ 1. 로그인 ][ 2. 이전으로 ] 선택하세요 - ");
+						scanf("%d", &slt.num);
+
+						// 캐릭터 로그인
+						if (slt.num == 1)
+						{
+							printf("\n[ %s ] (레벨 - %d)으로 로그인 하였습니다.\n", name.text[slot.c], state.point[slot.c][1][0]);
+
+							do
+							{
+								// 레벨기준 레벨업 필요경험치
+								state.point[slot.c][1][6] = state.point[slot.c][1][0] * 1500;
+
+
+								// 기능 선택
+								if (up.c > 0)
+								{
+									printf("\n[ 1. 캐릭터 상태 (레벨업) ]");
+								}
+								else
+								{
+									printf("\n[ 1. 캐릭터 상태 ]");
+								}
+								printf("[ 2. 월드 / 던전 ][ 3. 캐릭터 선택 ][ 9. 메인으로 ][ 0. 종료 ]\n");
+								printf("선택하세요 - ");
+								scanf("%d", &slt.num);
+
+								// 게임 종료
+								if (slt.num == 0)
+								{
+									printf("게임을 종료합니다.\n");
+									return 0;
+								}
+
+								// 정보보기 >>> 레벨업 했을때 추가 포인트 5 부여 및 할당 기능
+								else if (slt.num == 1)
+								{
+
+									printf("\n[ 캐릭터 정보 ]\n");
+									printf("ㆍ닉네임 - %s\n", name.text[slot.c]);
+									printf("ㆍ레벨 - %d / ", state.point[slot.c][1][0]);
+									printf("▶ 남은 경험치 - %d\n", state.point[slot.c][1][6] - state.point[slot.c][1][5]);
+
+									// 힘, 체력, 최대데미지
+									printf("ㆍ힘 - %d (+ %d) / ", state.point[slot.c][0][1], state.point[slot.c][1][1] - state.point[slot.c][0][1]);
+									printf("▶ 체력 - %d (+ %d) / ", state.dps[slot.c][0][0], state.dps[slot.c][1][0] - state.dps[slot.c][0][0]);
+									printf("▶ 최대공격력 - %d (+ %d)\n", state.dps[slot.c][0][1], state.dps[slot.c][1][1] - state.dps[slot.c][0][1]);
+
+									// 민첩, 이속, 공속
+									printf("ㆍ민첩 - %d (+ %d) / ", state.point[slot.c][0][2], state.point[slot.c][1][2] - state.point[slot.c][0][2]);
+									printf("▶ 이동속도 - %d (+ %d) / ", state.dps[slot.c][0][2], state.dps[slot.c][1][2] - state.dps[slot.c][0][2]);
+									printf("▶ 공격속도 - %d (+ %d)\n", state.dps[slot.c][0][3], state.dps[slot.c][1][3] - state.dps[slot.c][0][3]);
+
+									// 지능, 마나, 최대마뎀
+									printf("ㆍ지능 - %d (+ %d) / ", state.point[slot.c][0][3], state.point[slot.c][1][3] - state.point[slot.c][0][3]);
+									printf("▶ 마나 - %d (+ %d) / ", state.dps[slot.c][0][4], state.dps[slot.c][1][4] - state.dps[slot.c][0][4]);
+									printf("▶ 최대마법공격력 - %d (+ %d)\n", state.dps[slot.c][0][5], state.dps[slot.c][1][5] - state.dps[slot.c][0][5]);
+
+									// 운, 경험치 보너스
+									printf("ㆍ운 - %d (+ %d) / ", state.point[slot.c][0][4], state.point[slot.c][1][4] - state.point[slot.c][0][4]);
+									printf("▶ 추가 경험치 - %d%% (+ %d%% )\n", state.dps[slot.c][0][6], state.dps[slot.c][1][6] - state.dps[slot.c][0][6]);
+
+									// 레벨업 추가 능력치 포인트 할당
+									if (up.c > 0)
+									{
+										while (1)
+										{
+											// 추가 포인트가 남은 경우
+											if (up.c > 0)
+											{
+												printf("\n= 레벨업 포인트 할당 =\n");
+												printf("[ 현재 할당 가능한 능력치 포인트 - %d ]\n", up.c);
+												printf("(예시) 능력치 선택 - 힘 // 할당 포인트 - 5 → 힘에 5포인트 할당\n");
+												printf("능력치 선택 - ");
+												scanf("%s", &state.inputt);
+												printf("할당 포인트 - ");
+												scanf("%d", &state.inputn);
+												up.c = up.c - state.inputn;
+
+												// 능력치 선택 구분 >>>>> 미리보기를 보려면 레벨업 추가 포인트가 배열이어야 할듯
+												if (strcmp(state.inputt, "힘") == 0)
+												{
+													state.add[slot.c][0] = state.inputn;
+													printf("ㆍ힘 - %d (+ %d) / ", state.point[slot.c][1][1], state.add[slot.c][0]);
+													printf("▶ 체력 - %d (+ %d) / ", state.dps[slot.c][1][0], state.add[slot.c][0] * 10);
+													printf("▶ 최대공격력 - %d (+ %d)\n", state.dps[slot.c][1][1], state.add[slot.c][0] * 5);
+												}
+												else if (strcmp(state.inputt, "민첩") == 0)
+												{
+													state.add[slot.c][1] = state.inputn;
+													printf("ㆍ민첩 - %d (+ %d) / ", state.point[slot.c][1][2], state.add[slot.c][1]);
+													printf("▶ 이동속도 - %d (+ %d) / ", state.dps[slot.c][1][2], state.add[slot.c][1] * 5);
+													printf("▶ 공격속도 - %d (+ %d)\n", state.dps[slot.c][1][3], state.add[slot.c][1] * 5);
+												}
+												else if (strcmp(state.inputt, "지능") == 0)
+												{
+													state.add[slot.c][2] = state.inputn;
+													printf("ㆍ지능 - %d (+ %d) / ", state.point[slot.c][1][3], state.add[slot.c][2]);
+													printf("▶ 마나 - %d (+ %d) / ", state.dps[slot.c][1][4], state.add[slot.c][2] * 10);
+													printf("▶ 최대마법공격력 - %d (+ %d)\n", state.dps[slot.c][1][5], state.add[slot.c][2] * 5);
+												}
+												else if (strcmp(state.inputt, "운") == 0)
+												{
+													state.add[slot.c][3] = state.inputn;
+													printf("ㆍ운 - %d (+ %d) / ", state.point[slot.c][1][4], state.add[slot.c][3]);
+													printf("▶ 추가 경험치 - %d %% (+ %d %%)\n", state.dps[slot.c][1][6], state.add[slot.c][3]);
+												}
+												else
+												{
+													printf("다시 입력해주세요\n");
+												}
+												printf("남은 추가 포인트 - %d\n", up.c);
+											}
+
+											// 추가 포인트를 다 사용한 경우
+											else
+											{
+												printf("\n[ 능력치 추가 결과 미리보기 ]\n");
+												// 힘, 체력, 최대데미지
+												printf("ㆍ힘 - %d (+ %d) / ", state.point[slot.c][0][1], state.point[slot.c][1][1] + state.add[slot.c][0] - state.point[slot.c][0][1]);
+												printf("▶ 체력 - %d (+ %d) / ", state.dps[slot.c][0][0], state.dps[slot.c][1][0] + (state.add[slot.c][0] * 10) - state.dps[slot.c][0][0]);
+												printf("▶ 최대공격력 - %d (+ %d)\n", state.dps[slot.c][0][1], state.dps[slot.c][1][1] + (state.add[slot.c][0] * 5) - state.dps[slot.c][0][1]);
+
+												// 민첩, 이속, 공속
+												printf("ㆍ민첩 - %d (+ %d) / ", state.point[slot.c][0][2], state.point[slot.c][1][2] + state.add[slot.c][1] - state.point[slot.c][0][2]);
+												printf("▶ 이동속도 - %d (+ %d) / ", state.dps[slot.c][0][2], state.dps[slot.c][1][2] + (state.add[slot.c][1] * 5) - state.dps[slot.c][0][2]);
+												printf("▶ 공격속도 - %d (+ %d)\n", state.dps[slot.c][0][3], state.dps[slot.c][1][3] + (state.add[slot.c][1] * 5) - state.dps[slot.c][0][3]);
+
+												// 지능, 마나, 최대마뎀
+												printf("ㆍ지능 - %d (+ %d) / ", state.point[slot.c][0][3], state.point[slot.c][1][3] + state.add[slot.c][2] - state.point[slot.c][0][3]);
+												printf("▶ 마나 - %d (+ %d) / ", state.dps[slot.c][0][4], state.dps[slot.c][1][4] + (state.add[slot.c][2] * 10) - state.dps[slot.c][0][4]);
+												printf("▶ 최대마법공격력 - %d (+ %d)\n", state.dps[slot.c][0][5], state.dps[slot.c][1][5] + (state.add[slot.c][2] * 5) - state.dps[slot.c][0][5]);
+
+												// 운, 경험치 보너스
+												printf("ㆍ운 - %d (+ %d) / ", state.point[slot.c][0][4], state.point[slot.c][1][4] + state.add[slot.c][3] - state.point[slot.c][0][4]);
+												printf("▶ 추가 경험치 - %d %%(+ %d %%)\n", state.dps[slot.c][0][6], state.dps[slot.c][1][6] + state.add[slot.c][3] - state.dps[slot.c][0][6]);
+
+												// 추가포인트 결정
+												printf("위 결과를 적용하겠습니까? ( 1.적용 / 2.부분 변경 / 3.전부 재할당 ) - ");
+												scanf("%d", &slt.num);
+
+												// 결정
+												if (slt.num == 1)
+												{
+													state.point[slot.c][1][1] = state.point[slot.c][1][1] + state.add[slot.c][0];
+													state.dps[slot.c][1][0] = state.dps[slot.c][1][0] + (state.add[slot.c][0] * 10);
+													state.dps[slot.c][1][1] = state.dps[slot.c][1][1] + (state.add[slot.c][0] * 5);
+
+													state.point[slot.c][1][2] = state.point[slot.c][1][2] + state.add[slot.c][1];
+													state.dps[slot.c][1][2] = state.dps[slot.c][1][2] + (state.add[slot.c][1] * 5);
+													state.dps[slot.c][1][3] = state.dps[slot.c][1][3] + (state.add[slot.c][1] * 5);
+
+													state.point[slot.c][1][3] = state.point[slot.c][1][3] + state.add[slot.c][2];
+													state.dps[slot.c][1][4] = state.dps[slot.c][1][4] + (state.add[slot.c][2] * 10);
+													state.dps[slot.c][1][5] = state.dps[slot.c][1][5] + (state.add[slot.c][2] * 5);
+
+													state.point[slot.c][1][4] = state.point[slot.c][1][4] + state.add[slot.c][3];
+													state.dps[slot.c][1][6] = state.dps[slot.c][1][6] + state.add[slot.c][3];
+
+													// 추가포인트 초기화
+													for (int i = 0; i < 4; i++)
+													{
+														state.add[slot.c][i] = 0;
+													}
+													printf("\n적용되었습니다.\n");
+													break;
+												}
+
+												// 부분 변경
+												if (slt.num == 2)
+												{
+													printf("\n[ 추가 능력치 할당 내용 ]\n");
+													printf("힘 - %d\n", state.add[slot.c][0]);
+													printf("민첩 - %d\n", state.add[slot.c][1]);
+													printf("지능 - %d\n", state.add[slot.c][2]);
+													printf("운 - %d\n", state.add[slot.c][3]);
+
+													printf("\n조절할 능력치 입력 - ");
+													scanf("%s", &state.inputt);
+													printf("포인트 입력 - ");
+													scanf("%d", &state.inputn);
+
+													// 변경 능력치 구분
+													if (strcmp(state.inputt, "힘") == 0)
+													{
+														if (state.inputn > state.add[slot.c][0])
+														{
+															printf("할당된 포인트보다 더 큰 숫자 입니다.\n");
+														}
+														else
+														{
+															state.add[slot.c][0] = state.add[slot.c][0] - state.inputn;
+														}
+													}
+
+													else if (strcmp(state.inputt, "민첩") == 0)
+													{
+														if (state.inputn > state.add[slot.c][1])
+														{
+															printf("할당된 포인트보다 더 큰 숫자 입니다.\n");
+														}
+														else
+														{
+															state.add[slot.c][1] = state.add[slot.c][1] - state.inputn;
+														}
+													}
+
+													else if (strcmp(state.inputt, "지능") == 0)
+													{
+														if (state.inputn > state.add[slot.c][2])
+														{
+															printf("할당된 포인트보다 더 큰 숫자 입니다.\n");
+														}
+														else
+														{
+															state.add[slot.c][2] = state.add[slot.c][2] - state.inputn;
+														}
+													}
+
+													else if (strcmp(state.inputt, "운") == 0)
+													{
+														if (state.inputn > state.add[slot.c][1])
+														{
+															printf("할당된 포인트보다 더 큰 숫자 입니다.\n");
+														}
+														else
+														{
+															state.add[slot.c][3] = state.add[slot.c][3] - state.inputn;
+														}
+													}
+
+													// 추가 포인트 복구
+													if (state.inputn > 0)
+													{
+														up.c = up.c + state.inputn;
+														printf("\n남은 추가 포인트 - %d\n", up.c);
+													}
+												}
+
+												// 전부 재할당
+												if (slt.num == 3)
+												{
+													for (int i = 0; i < 4; i++)
+													{
+														if (state.add[slot.c][i] > 0)
+														{
+															state.add[slot.c][i] = 0;
+														}
+													}
+													up.c = 8;
+												}
+											}
+
+										}
+									}
+								}
+
+								// 월드 던전 선택 >>>>>>>> 던전별 경험치 할당
+								else if (slt.num == 2)
+								{
+									do
+									{
+										printf("\n[ 월드 / 던전 ]\n");
+										printf("[ 1.던전1 (1레벨 이상) ][ 2.던전2 (5레벨 이상) ][ 3.던전3 (10레벨 이상) ][ 4.던전4 (15레벨 이상) ][ 5.던전5 (20레벨 이상) ][ 0. 캐릭터 화면 ]\n");
+										printf("선택하세요 - ");
+										scanf("%d", &slt.num);
+
+										// 캐릭터 화면으로
+										if (slt.num == 0)
+										{
+											printf("캐릭터 화면으로 이동합니다.\n"); // 최대 6000
+											break;
+										}
+
+										// 던전 1 선택
+										else if (slt.num == 1)
+										{
+											printf("던전 1 에 입장하였습니다.\n");
+
+											// 얻는 경험치 최소 250 최대 500
+											srand((unsigned)time(NULL));
+											for (int i = 0; i < 1; i++)
+											{
+												field.getexp = rand() % 249 + 250;
+											}
+										}
+
+										// 던전2 선택
+										else if (slt.num == 2)
+										{
+											if (state.point[slot.c][1][0] < 5)
+											{
+												printf("레벨 5 부터 입장이 가능합니다.\n"); // 경험치 7500 ~ 13500
+											}
+											else
+											{
+												printf("던전 2 에 입장하였습니다.\n");
+
+												// 얻는 경험치 최소 750 최대 1500
+												srand((unsigned)time(NULL));
+												for (int i = 0; i < 1; i++)
+												{
+													field.getexp = rand() % 749 + 750;
+												}
+											}
+										}
+
+										// 던전3 선택
+										else if (slt.num == 3)
+										{
+											if (state.point[slot.c][1][0] < 10)
+											{
+												printf("레벨 10 부터 입장이 가능합니다.\n"); // 경험치 15000 ~ 21000
+											}
+											else
+											{
+												printf("던전 3 에 입장하였습니다.\n");
+
+												// 얻는 경험치 최소 1000 최대 2000
+												srand((unsigned)time(NULL));
+												for (int i = 0; i < 1; i++)
+												{
+													field.getexp = rand() % 999 + 1000;
+												}
+											}
+										}
+
+										// 던전4 선택
+										else if (slt.num == 4)
+										{
+											if (state.point[slot.c][1][0] < 15)
+											{
+												printf("레벨 15 부터 입장이 가능합니다.\n"); // 경험치 12500 ~ 28500
+											}
+											else
+											{
+												printf("던전 4 에 입장하였습니다.\n");
+
+												// 얻는 경험치 최소 1300 최대 2500
+												srand((unsigned)time(NULL));
+												for (int i = 0; i < 1; i++)
+												{
+													field.getexp = rand() % 1199 + 1300;
+												}
+											}
+										}
+
+										// 던전5 선택
+										else if (slt.num == 5)
+										{
+											if (state.point[slot.c][1][0] < 20)
+											{
+												printf("레벨 20 부터 입장이 가능합니다.\n"); // 경험치 30000 ~
+											}
+											else
+											{
+												printf("던전 5 에 입장하였습니다.\n");
+
+												// 얻는 경험치 최소 1500 최대 3000
+												srand((unsigned)time(NULL));
+												for (int i = 0; i < 1; i++)
+												{
+													field.getexp = rand() % 1499 + 1500;
+												}
+											}
+										}
+
+										// 경험치 결산
+										if (field.getexp > 0)
+										{
+											printf("던전을 통해 %d 의 경험치를 획득하였습니다.\n", field.getexp);
+											if (state.point[slot.c][1][4] > 0)
+											{
+												printf("운 능력치에 의해 %d의 경험치를 추가 획득하였습니다.\n", field.getexp * state.point[slot.c][1][4] / 100);
+											}
+											state.point[slot.c][1][5] = state.point[slot.c][1][5] + field.getexp + (field.getexp * state.point[slot.c][1][4] / 100);
+										}
+									} while (state.point[slot.c][1][5] < state.point[slot.c][1][6]);
+
+									// 레벨업 확인 >>>> 확인 중
+									if (state.point[slot.c][1][5] >= state.point[slot.c][1][6])
+									{
+										state.point[slot.c][1][0] = state.point[slot.c][1][0] + 1;
+										state.point[slot.c][1][5] = state.point[slot.c][1][5] - state.point[slot.c][1][6];
+										up.c = 8;
+										printf("\n☆★☆ 레 벨 업 ☆★☆\n");
+										printf("추가 능력치 %d 이 생겼습니다.\n", up.c);
+									}
+								}
+
+								// 캐릭터 선택창으로
+								else if (slt.num == 3)
+								{
+									printf("현재 캐릭터의 변경사항을 저장하고 캐릭터 선택창으로 갑니다.\n");
+								}
+
+								else if (slt.num == 9)
+								{
+									printf("메인화면으로 이동합니다.\n");
+								}
+							}while (slt.num != 3 && slt.num != 9);
+							
+							// 메인으로 돌아가기
+							if (slt.num == 9)
+							{
+								break;
+							}
+						}
+
+						else if (slt.num == 2)
+						{
+							printf("메인화면으로 돌아갑니다.\n");
+							break;
+						}
+					}
+				}
+				else
+				{
+					printf("생성된 캐릭터가 없습니다.\n");
+					printf("이전화면에서 캐릭터 생성을 해주세요\n");
+					break;
+				}
+			}
+		}
+
+		// 캐릭터 생성
+		else if (slt.num == 2)
+		{
+			printf("\n[ 캐릭터 생성 ]\n");
+			printf("\n( 비어있는 슬롯 )\n");
+			for (int i = 1; i < 11; i++)
+			{
+				if (strcmp(name.text[i], "") == 0)
+				{
+					printf("슬롯 %d번 - ( 비어있음 )\n", i);
+				}
+			}
+			printf("\n");
+
+			// 캐릭터 생성 불가
+			if (count.num == 0)
+			{
+				printf("더이상 캐릭터 생성을 할 수 없습니다.\n");
+			}
+
+			// 캐릭터 생성 진행
+			else
+			{
+				printf("\n= 캐릭터 생성 =\n");
+				printf("(생성 가능한 캐릭터 수 - %d 개)\n", count.num);
+
+				// 캐릭터 생성 칸 선택
+				do
+				{
+					printf("캐릭터를 생성할 칸을 선택하세요 - ");
+					scanf("%d", &slot.c);
+					if (slot.c < 11)
+					{
+						if (strcmp(name.text[slot.c], "") != 0)
+						{
+							printf("이미 생성되어있습니다. 다른 칸을 선택해주세요\n");
+						}
+					}
+					else if (slot.c == 0)
+					{
+						printf("1 ~ 10까지 숫자를 입력하세요\n");
+					}
+					else
+					{
+						printf("1 ~ 10까지 숫자를 입력하세요\n");
+					}
+
+				} while (strcmp(name.text[slot.c], "") != 0);
+
+				// 캐릭터 닉네임
+				do
+				{
+					printf("\n캐릭터 닉네임 - ");
+					scanf("%s", &name.inputt);
+
+					// 닉네임 중복 확인
+					for (int i = 1; i < 11; i++)
+					{
+						if (strcmp(name.text[i], "") != 0)
+						{
+							if (strcmp(name.text[i], name.inputt) == 0)
+							{
+								printf("중복된 닉네임 입니다. 다시 입력해주세요\n");
+							}
+							else
+							{
+								strcpy(name.text[slot.c], name.inputt);
+							}
+						}
+						else
+						{
+							strcpy(name.text[slot.c], name.inputt);
+						}
+					}
+					if (strcmp(name.text[slot.c], "") != 0)
+					{
+						printf("닉네임이 입력되었습니다.\n");
+					}
+				} while (strcmp(name.text[slot.c], "")==0);
+
+				// 캐릭터 능력치 분배
+				while (1)
+				{
+					printf("\n( 캐릭터 초기 능력치 분배)\n");
+					printf("[ 능력치별 효과 ]\n");
+					printf("ㆍ 힘 '1' 포인트 → HP '10' 상승 / 최대공격력 '5' 상승\n");
+					printf("ㆍ 민첩 '1' 포인트 → 이동속도 '5' 상승 / 공격속도 '5' 상승\n");
+					printf("ㆍ 지능 '1' 포인트 → MP '10' 상승 / 최대마법공격력 '5' 상승\n");
+					printf("ㆍ 운 '1'포인트 → 던전 / 월드 추가 경험치 '1%' 상승\n");
+
+					// 레벨 1 할당
+					state.point[slot.c][0][0] = 1;
+
+					// 초기 능력치 각 5 할당
+					for (int i = 1; i < 5; i++)
+					{
+						state.point[slot.c][0][i] = 5;
+					}
+
+					// 초기 포인트 할당
+					do
+					{
+						if (state.ppoint[slot.c] == 30)
+						{
+							printf("\n= 초기 능력치 =\n");
+						}
+						else
+						{
+							printf("\n= 현재 능력치 =\n");
+						}
+
+						printf("힘 - %d\n", state.point[slot.c][0][1]);
+						printf("민첩 - %d\n", state.point[slot.c][0][2]);
+						printf("지능 - %d\n", state.point[slot.c][0][3]);
+						printf("운 - %d\n", state.point[slot.c][0][4]);
+						printf("초기 포인트 - %d\n", state.ppoint[slot.c]);
+
+						printf("\n= 초기 포인트 할당 =\n");
+						printf("(예시) 능력치 선택 - 힘 // 할당 포인트 - 5 → 힘에 5포인트 할당\n");
+						printf("능력치 선택 - ");
+						scanf("%s", &state.inputt);
+						printf("할당 포인트 - ");
+						scanf("%d", &state.inputn);
+
+						// 초기 포인트 계산
+						state.ppoint[slot.c] = state.ppoint[slot.c] - state.inputn;
+
+						// 능력치 선택 구분
+						if (strcmp(state.inputt, "힘") == 0)
+						{
+							state.point[slot.c][0][1] = state.point[slot.c][0][1] + state.inputn;
+						}
+						else if (strcmp(state.inputt, "민첩") == 0)
+						{
+							state.point[slot.c][0][2] = state.point[slot.c][0][2] + state.inputn;
+						}
+						else if (strcmp(state.inputt, "지능") == 0)
+						{
+							state.point[slot.c][0][3] = state.point[slot.c][0][3] + state.inputn;
+						}
+						else if (strcmp(state.inputt, "운") == 0)
+						{
+							state.point[slot.c][0][4] = state.point[slot.c][0][4] + state.inputn;
+						}
+						else
+						{
+							printf("다시 입력해주세요.\n");
+						}
+
+					} while (state.ppoint[slot.c] != 0);
+
+					printf("\n= 시작 능력치 미리보기 =\n");
+					printf("힘 - %d\n", state.point[slot.c][0][1]);
+					printf("민첩 - %d\n", state.point[slot.c][0][2]);
+					printf("지능 - %d\n", state.point[slot.c][0][3]);
+					printf("운 - %d\n", state.point[slot.c][0][4]);
+					printf("위 능력치로 시작하겠습니까? (1.시작 / 2.재설정) - ");
+					scanf("%d", &slt.num);
+
+					if (slt.num == 1)
+					{
+						printf("현재 능력치로 캐릭터를 생성합니다.\n");
+						// 초기 능력치를 현재 능력치로 복사
+						for (int i = 0; i < 6; i++)
+						{
+							state.point[slot.c][1][i] = state.point[slot.c][0][i];
+						}
+
+
+						// 능력치에 따른 dps 초기 설정
+						for (int i = 0; i < 2; i++)
+						{
+							state.dps[slot.c][i][0] = state.point[slot.c][0][1] * 10; // hp
+							state.dps[slot.c][i][1] = state.point[slot.c][0][1] * 5; // 최대뎀
+							state.dps[slot.c][i][2] = state.point[slot.c][0][2] * 10; // 이속
+							state.dps[slot.c][i][3] = state.point[slot.c][0][2] * 5; // 공속
+							state.dps[slot.c][i][4] = state.point[slot.c][0][3] * 10; // 마나
+							state.dps[slot.c][i][5] = state.point[slot.c][0][3] * 5; // 최대마뎀
+							state.dps[slot.c][i][6] = state.point[slot.c][0][4]; // 경험치 보너스
+						}
+						
+
+						// 빈슬롯 한칸 없애기
+						count.num = count.num - 1;
+						break;
+					}
+					else if (slt.num == 2)
+					{
+						printf("능력치를 다시 할당합니다.\n");
+					}
+				}
+			}
+		}
+
+		// 캐릭터 삭제
+		else if (slt.num == 3)
+		{
+			printf("\n[ 캐릭터 삭제 ]\n");
+			printf("삭제할 캐릭터 슬롯 번호 - ");
+			scanf("%d", &slot.c);
+
+			printf("\n[ 선택한 캐릭터 ]\n");
+			if (strcmp(name.text[slot.c], "") != 0)
+			{
+				printf("[ 닉네임 - %s ][ 레벨 - %d ][ 힘 - %d / 민첩 - %d / 지능 - %d / 운 - %d ]\n", name.text[slot.c], state.point[slot.c][1][0], state.point[slot.c][1][1], state.point[slot.c][1][2], state.point[slot.c][1][3], state.point[slot.c][1][4]);
+				while (1)
+				{
+					printf("캐릭터 삭제를 진행하려면 해당 캐릭터의 닉네임을 입력해주세요 - ");
+					scanf("%s", &name.inputt);
+					if (strcmp(name.text[slot.c], name.inputt) == 0)
+					{
+						printf("확인되었습니다. 삭제하겠습니까? (1.삭제 / 2.취소) - ");
+						scanf("%d", &slt.num);
+						if (slt.num == 1)
+						{
+							printf("삭제를 진행합니다.\n");
+							
+							// 닉네임 초기화
+							strcpy(name.text[slot.c], "");
+							
+							// 스텟 초기화
+							for(int i = 0; i < 2; i++)
+							{
+								for (int k = 0; k < 7; k++)
+								{
+									state.point[slot.c][i][k] = 0;
+									state.dps[slot.c][i][k] = 0;
+								}
+							}
+
+							// 추가 경험치 초기화
+							for (int i = 0; i < 4; i++)
+							{
+								state.add[slot.c][i] = 0;
+							}
+							
+							if (strcmp(name.text[slot.c], "") == 0)
+							{
+								count.num = count.num + 1;
+								printf("삭제되었습니다.\n");
+								break;
+							}
+						}
+
+						else if (slt.num == 2)
+						{
+							printf("삭제를 취소합니다.\n");
+							break;
+						}
+					}
+					else
+					{
+						printf("다시 입력해주세요\n");
+					}
+				}
+			}
+			else
+			{
+				printf("해당 캐릭터가 없습니다. 확인해주세요\n");
+			}
+		}
+	}
+}
