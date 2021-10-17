@@ -1,0 +1,395 @@
+#include<stdio.h>
+#include<Time.h>
+#include<stdlib.h>
+
+struct conf
+{
+	int num;
+	char text[10];
+};
+
+struct data
+{
+	int dnum[10][2], lim, cnt, add, tnum[2];
+	// [학생수][나이, 성적]
+	char dtext[10][10], ttext[10];
+};
+
+int main()
+{
+	struct conf slt, slt2, srch;
+	struct data stu;
+
+	// 초기값
+	slt.num = 0;
+	srch.num = 0;
+	strcpy(slt.text, "");
+	strcpy(slt2.text, "");
+
+	stu.lim = 10;
+	stu.cnt = 0;
+	stu.add = 0;
+
+
+	strcpy(stu.ttext, "");
+
+	for (int k = 0; k < 10; k++)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			stu.dnum[k][i] = 0;
+			stu.tnum[i] = 0;
+		}
+	}
+
+	for (int k = 0; k < 10; k++)
+	{
+		strcpy(stu.dtext[k], "");
+	}
+
+
+
+	// ========= 본문 ==========
+
+	printf("\n== 학생 데이터 관리 프로그램 ==\n");
+
+	while (1)
+	{
+		printf("\n[ 1.학생추가 ][ 2.데이터정렬 ][ 3.데이터삭제 ] 선택하세요 - ");
+		scanf("%d", &slt.num);
+
+		// 학생추가
+		if (slt.num == 1)
+		{
+			printf("\n[ 학생추가 ]\n");
+
+			// 등록할 학생수 입력 및 현황 표시
+			do
+			{
+				printf("추가 할 학생수를 입력하세요 - ");
+				scanf("%d", &stu.add);
+				if (stu.cnt + stu.add > stu.lim)
+				{
+					printf("최대 등록 수를 초과하였습니다.\n");
+				}
+
+				else if (stu.cnt + stu.add == stu.lim)
+				{
+					printf("최대 등록 수에 도달하였습니다.\n");
+				}
+
+				else
+				{
+					printf("최대 등록 - %d 명 / 현재 추가 포함 등록 수 - %d 명\n", stu.lim, stu.cnt + stu.add);
+				}
+			} while (stu.cnt + stu.add > stu.lim);
+
+
+
+			// 데이터 추가
+			for (int k = 0; k < stu.add; k++)
+			{
+				if (strcmp(stu.dtext[k], "") == 0)
+				{
+					printf("%d 번째 학생입니다.\n", k + 1);
+					printf("1.이름 - ");
+					scanf("%s", &stu.dtext[k]);
+					printf("2. 나이 - ");
+					scanf("%d", &stu.dnum[k][0]);
+					printf("3. 성적 - ");
+					scanf("%d", &stu.dnum[k][1]);
+				}
+			}
+
+			// 등록된 학생 수 계산
+			stu.cnt = stu.cnt + stu.add;
+			printf("현재 등록된 학생 수 - 총 %d 명 / 추가 가능 학생 수 - %d 명\n", stu.cnt, stu.lim - stu.cnt);
+		}
+
+		// 데이터 정렬
+		else if (slt.num == 2)
+		{
+			if (stu.cnt == 0)
+			{
+				printf("데이터가 없습니다.\n");
+			}
+			else
+			{
+				while (1)
+				{
+					printf("\n[ 데이터 정렬 ]\n");
+					printf("첫번째 정렬 기준을 입력하세요 ( 나이 / 성적 ) - ");
+					scanf("%s", &slt.text);
+					printf("두번째 정렬 기준을 입력하세요 ( 높은순 / 낮은순 ) - ");
+					scanf("%s", &slt2.text);
+
+					// 나이
+					if (strcmp(slt.text, "나이") == 0)
+					{
+						// 나이 - 높은순 - 높을수록 앞으로
+						if (strcmp(slt2.text, "높은순") == 0)
+						{
+							for (int k = 0; k < stu.cnt - 1; k++)
+							{
+								for (int i = k + 1; i < stu.cnt; i++)
+								{
+									if (stu.dnum[k][0] < stu.dnum[i][0])
+									{
+										// 숫자 이동
+										for (int t = 0; t < 2; t++)
+										{
+											stu.tnum[t] = stu.dnum[i][t];
+											stu.dnum[i][t] = stu.dnum[k][t];
+											stu.dnum[k][t] = stu.tnum[t];
+										}
+
+										// 문자이동
+										strcpy(stu.ttext, stu.dtext[i]);
+										strcpy(stu.dtext[i], stu.dtext[k]);
+										strcpy(stu.dtext[k], stu.ttext);
+									}
+								}
+							}
+						}
+
+						// 나이 - 낮은순
+						else if (strcmp(slt2.text, "낮은순") == 0)
+						{
+							for (int k = 0; k < stu.cnt - 1; k++)
+							{
+								for (int i = k + 1; i < stu.cnt; i++)
+								{
+									if (stu.dnum[k][0] > stu.dnum[i][0])
+									{
+										// 숫자 이동
+										for (int t = 0; t < 2; t++)
+										{
+											stu.tnum[t] = stu.dnum[i][t];
+											stu.dnum[i][t] = stu.dnum[k][t];
+											stu.dnum[k][t] = stu.tnum[t];
+										}
+
+										// 문자이동
+										strcpy(stu.ttext, stu.dtext[i]);
+										strcpy(stu.dtext[i], stu.dtext[k]);
+										strcpy(stu.dtext[k], stu.ttext);
+									}
+								}
+							}
+						}
+					}
+
+					// 성적
+					else if (strcmp(slt.text, "성적") == 0)
+					{
+						// 성적 - 높은순 - 높을수록 앞으로
+						if (strcmp(slt2.text, "높은순") == 0)
+						{
+							for (int k = 0; k < stu.cnt - 1; k++)
+							{
+								for (int i = k + 1; i < stu.cnt; i++)
+								{
+									if (stu.dnum[k][1] < stu.dnum[i][1])
+									{
+										// 숫자 이동
+										for (int t = 0; t < 2; t++)
+										{
+											stu.tnum[t] = stu.dnum[i][t];
+											stu.dnum[i][t] = stu.dnum[k][t];
+											stu.dnum[k][t] = stu.tnum[t];
+										}
+
+										// 문자이동
+										strcpy(stu.ttext, stu.dtext[i]);
+										strcpy(stu.dtext[i], stu.dtext[k]);
+										strcpy(stu.dtext[k], stu.ttext);
+									}
+								}
+							}
+						}
+
+						// 나이 - 낮은순
+						else if (strcmp(slt2.text, "낮은순") == 0)
+						{
+							for (int k = 0; k < stu.cnt - 1; k++)
+							{
+								for (int i = k + 1; i < stu.cnt; i++)
+								{
+									if (stu.dnum[k][1] > stu.dnum[i][1])
+									{
+										// 숫자 이동
+										for (int t = 0; t < 2; t++)
+										{
+											stu.tnum[t] = stu.dnum[i][t];
+											stu.dnum[i][t] = stu.dnum[k][t];
+											stu.dnum[k][t] = stu.tnum[t];
+										}
+
+										// 문자이동
+										strcpy(stu.ttext, stu.dtext[i]);
+										strcpy(stu.dtext[i], stu.dtext[k]);
+										strcpy(stu.dtext[k], stu.ttext);
+									}
+								}
+							}
+						}
+					}
+
+					// 결과 표시
+					if (strcmp(slt.text, "") != 0)
+					{
+						if (strcmp(slt2.text, "") != 0)
+						{
+							printf("\n( 정렬 결과 )\n");
+							printf("========================================\n");
+							for (int k = 0; k < stu.cnt; k++)
+							{
+								printf("[ 이름 - %s ]", stu.dtext[k]);
+								printf("[ 나이 - %d ]", stu.dnum[k][0]);
+								printf("[ 성적 - %d ]\n", stu.dnum[k][1]);
+							}
+							printf("========================================\n");
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// 데이터 삭제
+		else if (slt.num == 3)
+		{
+			if (stu.cnt == 0)
+			{
+				printf("삭제할 데이터가 없습니다.\n");
+			}
+			else
+			{
+				while (1)
+				{
+					printf("\n[ 데이터 삭제 ]\n");
+					printf("[ 1.부분삭제 ][ 2.전체삭제 ][ 0.취소 ] 선택하세요 - ");
+					scanf("%d", &slt.num);
+
+					// 취소
+					if (slt.num == 0)
+					{
+						printf("삭제를 취소하고 메인으로 돌아갑니다.\n");
+						break;
+					}
+
+					// 부분삭제
+					if (slt.num == 1)
+					{
+						printf("\n( 부분삭제 )\n");
+						printf("데이터를 삭제하려는 학생 이름을 입력하세요 - ");
+						scanf("%s", &slt.text);
+
+						for (int k = 0; k < stu.lim; k++)
+						{
+							if (strcmp(stu.dtext[k], slt.text) == 0)
+							{
+								srch.num = k;
+							}
+						}
+						printf("\n( 선택 결과 )\n");
+						printf("[ 이름 - %s ]", stu.dtext[srch.num]);
+						printf("[ 나이 - %d ]", stu.dnum[srch.num][0]);
+						printf("[ 성적 - %d ]", stu.dnum[srch.num][1]);
+
+						// 결정
+						printf("삭제하겠습니까? ( 1.삭제 / 2.취소 ) - ");
+						scanf("%d", &slt.num);
+
+						// 삭제
+						if (slt.num == 1)
+						{
+							// 데이터 삭제
+							strcpy(stu.dtext[srch.num], "");
+							for (int i = 0; i < 2; i++)
+							{
+								stu.dnum[srch.num][i] = 0;
+							}
+
+							// 총 학생수 갱신
+							stu.cnt = stu.cnt - 1;
+							printf("삭제되었습니다.\n");
+
+							printf("추가적으로 삭제하겠습니까? ( 1.삭제 / 2.완료 ) - ");
+							scanf("%d", &slt.num);
+
+							// 추가삭제
+							if (slt.num == 1)
+							{
+								printf("삭제를 지속합니다.\n");
+							}
+
+							// 삭제 완료
+							else if (slt.num == 2)
+							{
+								printf("삭제를 완료하고 메인으로 돌아갑니다.\n");
+								break;
+							}
+						}
+
+						// 취소
+						else if (slt.num == 2)
+						{
+							printf("삭제를 취소하고 메인으로 돌아갑니다.\n");
+							break;
+						}
+
+						// 입력확인
+						else
+						{
+							printf("입력을 확인해주세요.\n");
+						}
+
+					}
+
+					// 전체삭제
+					else if (slt.num == 2)
+					{
+						printf("\n( 전체삭제 )\n");
+						printf("현재 데이터를 모두 삭제하겠습니까? ( 1.삭제 / 2.취소 ) - ");
+						scanf("%d", &slt.num);
+
+						// 전체삭제 진행
+						if (slt.num == 1)
+						{
+							for (int k = 0; k < stu.lim; k++)
+							{
+								for (int i = 0; i < 2; i++)
+								{
+									strcpy(stu.dtext[k], "");
+									stu.dnum[k][i] = 0;
+								}
+							}
+
+							// 등록된 학생수 초기화
+							stu.add = 0;
+							stu.cnt = 0;
+
+							printf("전체 삭제 완료되었습니다.\n");
+						}
+
+						// 전체삭제 취소
+						else if (slt.num == 2)
+						{
+							printf("전체 삭제를 취소하고 메인으로 돌아갑니다.\n");
+						}
+
+						// 메인으로 돌아가기
+						break;
+					}
+				}
+			}
+		}
+
+		// 오류표기
+		else
+		{
+			printf("다시 입력하세요.\n");
+		}
+	}
+}
