@@ -1,0 +1,767 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <Time.h>
+
+struct conf
+{
+	int num, cash, mtch, rcash[5]; 
+};
+
+struct lotto
+{
+	int snum[100][6], rnum[6], tnum[6], money, bns, cnts, pick[6][101]; // 당첨확인[등수][명수][해당 게임번호]
+};
+
+main()
+{
+	struct conf slt, cnt, chck, game, total;
+	struct lotto aut, semi, rlt;
+
+	// 초기값
+
+	slt.num = 0;
+	cnt.num = 0;
+	chck.num = 0;
+	game.cash = 1000;
+	total.cash = 0; // 총 당첨금
+	aut.money = 0;
+	semi.money = 0;
+	rlt.money = 0; // 당첨결과 총합계
+	rlt.bns = 0;
+	cnt.mtch = 0;
+	aut.cnts = 0;
+	semi.cnts = 0;
+	rlt.cnts = 0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		game.rcash[i] = 0;
+	}
+	
+
+	for (int t = 0; t < 100; t++)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			aut.snum[t][i] = 0;
+			semi.snum[t][i] = 0;
+		}
+	}
+	
+	
+	for (int i = 0; i < 6; i++)
+	{
+		rlt.rnum[i] = 0; // 당첨번호
+		rlt.tnum[i] = 0; // 정렬용 임시
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		for (int t = 0; t < 101; t++)
+		{
+			aut.pick[i][t] = 0;
+			semi.pick[i][t] = 0;
+		}
+	}
+
+	// 본문
+
+	// 제목
+	while (1)
+	{
+		printf("\n==== [ 로또 ] ====\n");
+
+		printf("[ 1.자동 ][ 2.수동 ][ 3.당첨확인 ][ 4.당첨금 입력 ][ 0.종료 ] 선택 - ");
+		
+		// 당첨금이 입력되지 않은 경우 자동으로 입력으로 이동
+		if (total.cash == 0)
+		{
+			printf("\n당첨금이 입력되어 있지 않습니다. 당첨금 입력으로 이동합니다.\n");
+			slt.num = 4;
+		}
+
+		else
+		{
+			scanf("%d", &slt.num);
+		}
+
+		// 종료
+		if (slt.num == 0)
+		{
+			printf("프로그램을 종료합니다.\n");
+			return 0;
+		}
+
+		// 자동
+		else if (slt.num == 1)
+		{
+			printf("\n[ 자동 ]\n");
+			printf("게임 횟수를 입력해주세요 - ");
+			scanf("%d", &aut.cnts);
+
+			// 자동으로 번호 선택
+			srand((unsigned)time(NULL));
+			for (int t = 1; t < aut.cnts + 1; t++)
+			{
+				for (int i = 0; i < 6; i++)
+				{
+					aut.snum[t][i] = rand() % 44 + 1;
+				}
+
+				// 중복검출(게임내)
+				for (int i = 0; i < 5; i++)
+				{
+					for (int k = i + 1; k < 6;)
+					{
+						// 중복 아니면 다음 숫자
+						if (aut.snum[t][i] != aut.snum[t][k])
+						{
+							k++;
+						}
+
+						// 중복이면 다시 생성
+						else
+						{
+							aut.snum[t][k] = rand() % 44 + 1;
+						}
+					}
+				}
+			}
+
+			// 중복검출(게임끼리)
+			for (int t = 1; t < aut.cnts; t++)
+			{
+				for (int k = t + 1; k < aut.cnts+1;)
+				{
+					for (int i = 0; i < 6; i++)
+					{
+						if (aut.snum[t][i] == aut.snum[k][i])
+						{
+							chck.num = chck.num + 1;
+						}
+
+						// 완전 중복될 경우
+						if (chck.num > 5)
+						{
+							aut.snum[k][i] = rand() % 44 + 1;
+						}
+
+						// 완전 중복이 아닐 경우
+						else
+						{
+							chck.num = 0;
+							k++;
+						}
+					}
+				}
+			}
+
+			// 오름차순 정렬
+			for (int t = 1; t < aut.cnts+1; t++)
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					for (int k = i + 1; k < 6; k++)
+					{
+						if (aut.snum[t][i] > aut.snum[t][k])
+						{
+							rlt.tnum[i] = aut.snum[t][k];
+							aut.snum[t][k] = aut.snum[t][i];
+							aut.snum[t][i] = rlt.tnum[i];
+						}
+					}
+				}
+			}
+			
+			// 결과출력 >>> 오름차순
+			printf("\n== 자동선택결과 ==\n");
+			for (int t = 1; t < aut.cnts+1; t++)
+			{
+				printf("\n[ %d 번째 게임 ][", t);
+				for (int i = 0; i < 6; i++)
+				{
+					printf(" %d ", aut.snum[t][i]);
+				}
+				printf("]\n");
+			}
+
+			// 자동 - 구매금액 계산
+			aut.money = game.cash * aut.cnts;
+			
+		}
+
+		// 수동
+		else if (slt.num == 2)
+		{
+			printf("\n[ 수동 ]\n");
+			printf("게임 횟수를 입력하세요 - ");
+			scanf("%d", &semi.cnts);
+			
+			printf("1 ~ 45 중 숫자를 입력하세요\n");
+			
+			// 숫자입력 >>> 중복차단
+			for (int t = 1; t < semi.cnts+1; t++)
+			{
+				for (int i = 0; i < 6;)
+				{
+					printf("\n[ 총 %d 중 %d 번째 게임][ %d 번째 숫자 입력 ] - ", semi.cnts, t, i + 1);
+					scanf("%d", &semi.snum[t][i]);
+
+					// 범위 이외
+					if (semi.snum[t][i] > 45)
+					{
+						printf("범위 밖 숫자입니다. 다시 입력하세요\n");
+					}
+					else if (semi.snum[t][i] == 0)
+					{
+						printf("0은 범위 밖 숫자입니다. 다시 입력하세요\n");
+					}
+					
+					// 범위내
+					else
+					{
+						i++;
+					}
+				}
+
+				// 같은게임 숫자중복차단
+				for (int i = 0; i < 5; i++)
+				{
+					for (int k = i + 1; k < 6;)
+					{
+						if (semi.snum[t][i] == semi.snum[t][k])
+						{
+							printf("중복되는 숫자가 있어 다시 입력합니다.\n");
+							printf("재입력 - ");
+							scanf("%d", &semi.snum[t][k]);
+						}
+						else
+						{
+							// 범위 이외
+							if (semi.snum[t][k] > 45)
+							{
+								printf("범위 밖 숫자입니다. 다시 입력하세요.\n");
+							}
+							else if (semi.snum[t][k] == 0)
+							{
+								printf("0은 입력 할 수 없습니다. 다시 입력하세요.\n");
+							}
+
+							// 범위이내
+							else
+							{
+								k++;
+							}
+						}
+					}
+				}
+
+			}
+
+			// 정렬 오름차순 >>>>> tnum가 굳이 배열인지 확인
+			for (int t = 1; t < semi.cnts+1; t++)
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					for (int k = i + 1; k < 6; k++)
+					{
+						if (semi.snum[t][i] > semi.snum[t][k])
+						{
+							semi.tnum[k] = semi.snum[t][k];
+							semi.snum[t][k] = semi.snum[t][i];
+							semi.snum[t][i] = semi.tnum[k];
+						}
+					}
+				}
+			}
+
+			// 결과 출력
+			printf("\n=== 선택결과 ===\n");
+			for (int t = 1; t < semi.cnts+1; t++)
+			{
+				printf("\n[ %d 번째 게임][", t);
+				for (int i = 0; i < 6; i++)
+				{
+					printf(" %d ", semi.snum[t][i]);
+				}
+				printf("]\n");
+			}
+
+			// 게임 비용 계산
+			semi.money = game.cash * semi.cnts;
+		}
+
+		// 당첨확인 >>>> 번호 6개 1등, 번호 5개 보너스 1개 2등, 번호 5개 3등, 번호 4개 4등, 번호3개 5등
+		else if (slt.num == 3)
+		{
+			printf("\n[ 당첨확인 ]\n");
+			printf("이번주 로또 당첨 숫자를 입력해주세요\n");
+			
+			// 당첨번호 입력
+			do
+			{
+				for (int i = 0; i < 6;)
+				{
+					printf("[ %d 번째 숫자 ] - ", i + 1);
+					scanf("%d", &rlt.rnum[i]);
+
+					// 범위이외
+					if (rlt.rnum[i] > 45)
+					{
+						printf("입력한 숫자를 확인해주세요\n");
+					}
+					else if (rlt.rnum[i] == 0)
+					{
+						printf("입력한 숫자를 확인해주세요\n");
+					}
+
+					// 범위내
+					else
+					{
+						i++;
+					}
+				}
+				printf("\n== 입력결과 ==\n");
+				printf("\n[");
+				for (int i = 0; i < 6; i++)
+				{
+					printf(" %d ", rlt.rnum[i]);
+				}
+				printf("]\n");
+
+				printf("결과를 저장합니다. ( 1.저장 / 2.재입력 ) - ");
+				scanf("%d", &slt.num);
+
+				// 저장
+				if (slt.num == 1)
+				{
+					printf("저장되었습니다.\n");
+				}
+
+				// 재입력
+				else if (slt.num == 2)
+				{
+					printf("이번주 당첨 번호를 다시 입력합니다.\n");
+				}
+
+				// 오입력 필터
+				else
+				{
+					printf("입력을 확인해주세요.\n");
+				}
+
+			} while (slt.num != 1);
+
+			// 보너스 번호 입력
+			do
+			{
+				printf("보너스 번호 입력 - ");
+				scanf("%d", &rlt.bns);
+
+				// 범위밖
+				if (rlt.bns > 45)
+				{
+					printf("범위를 넘어선 숫자입니다. 확인해주세요\n");
+				}
+				else if(rlt.bns == 0)
+				{
+					printf("0은 입력 할 수 없습니다.\n");
+				}
+
+				// 범위이내
+				else
+				{
+					printf("저장하시겠습니까? ( 1.저장 / 2.재입력 ) - ");
+					scanf("%d", &slt.num);
+
+					// 저장
+					if (slt.num == 1)
+					{
+						printf("저장되었습니다\n");
+					}
+
+					// 재입력
+					else if (slt.num == 2)
+					{
+						printf("재입력합니다.]\n");
+					}
+				}
+			} while (slt.num != 1);
+			
+			// 자동당첨 확인
+			if (aut.cnts > 0)
+			{
+				printf("\n[ 자동선택 %d 게임 결과확인 ]\n", aut.cnts);
+				
+				// 당첨 찾기
+				for (int t = 1; t < aut.cnts+1; t++)
+				{
+					for (int i = 0; i < 6; i++)
+					{
+						if (aut.snum[t][i] == rlt.rnum[i])
+						{
+							rlt.cnts = rlt.cnts + 1;
+						}
+					}
+
+					// 1등
+					if (rlt.cnts == 6)
+					{
+						aut.pick[0][0] = aut.pick[0][0] + 1;
+						aut.pick[0][t] = t;
+					}
+
+					// 2등, 3등
+					else if (rlt.cnts == 5)
+					{
+						for (int i = 0; i < 6; i++)
+						{
+							// 2등
+							if (aut.snum[t][i] == rlt.bns)
+							{
+								aut.pick[1][0] = aut.pick[1][0] + 1;
+								aut.pick[1][t] = t;
+							}
+
+							// 3등
+							else
+							{
+								aut.pick[2][0] = aut.pick[2][0] + 1;
+								aut.pick[2][t] = t;
+							}
+						}
+					}
+
+					// 4등
+					else if (rlt.cnts == 4)
+					{
+						aut.pick[3][0] = aut.pick[3][0] + 1;
+						aut.pick[3][t] = t;
+					}
+
+					// 5등
+					else if (rlt.cnts == 3)
+					{
+						aut.pick[4][0] = aut.pick[4][0] + 1;
+						aut.pick[4][t] = t;
+					}
+
+					// 낙첨
+					else
+					{
+						aut.pick[5][0] = aut.pick[5][0] + 1;
+						aut.pick[5][t] = t;
+					}
+
+					// 당첨갯수 초기화
+					rlt.cnts = 0;
+				}
+
+				// 당첨 결과 표시
+				printf("\n======= [ 자동 당첨 결과 ] =======\n");
+				for (int i = 0; i < 6; i++)
+				{
+					if (i < 5)
+					{
+						printf("%d 등 - ", i + 1);
+					}
+					else
+					{
+						printf("낙첨 - ");
+					}
+					printf("%d 게임\n", aut.pick[i][0]);
+				}
+				printf("\n=============================\n");
+			}
+			
+			// 수동당첨 확인
+			if (semi.cnts > 0)
+			{
+				printf("\n[ 수동선택 %d 게임 결과확인 ]\n", semi.cnts);
+
+				// 당첨 찾기
+				for (int t = 1; t < semi.cnts+1; t++)
+				{
+					for (int i = 0; i < 6; i++)
+					{
+						if (semi.snum[t][i] == rlt.rnum[i])
+						{
+							rlt.cnts = rlt.cnts + 1;
+						}
+					}
+
+					// 1등
+					if (rlt.cnts == 6)
+					{
+						semi.pick[0][0] = semi.pick[0][0] + 1;
+						semi.pick[0][t] = t;
+					}
+
+					// 2등, 3등
+					else if (rlt.cnts == 5)
+					{
+						for (int i = 0; i < 6; i++)
+						{
+							// 2등
+							if (semi.snum[t][i] == rlt.bns)
+							{
+								semi.pick[1][0] = semi.pick[1][0] + 1;
+								semi.pick[1][t] = t;
+							}
+
+							// 3등
+							else
+							{
+								semi.pick[2][0] = semi.pick[2][0] + 1;
+								semi.pick[2][t] = t;
+							}
+						}
+					}
+
+					// 4등
+					else if (rlt.cnts == 4)
+					{
+						semi.pick[3][0] = semi.pick[3][0] + 1;
+						semi.pick[3][t] = t;
+					}
+
+					// 5등
+					else if (rlt.cnts == 3)
+					{
+						semi.pick[4][0] = semi.pick[4][0] + 1;
+						semi.pick[4][t] = t;
+					}
+
+					// 낙첨
+					else
+					{
+						semi.pick[5][0] = semi.pick[5][0] + 1;
+						semi.pick[5][t] = t;
+					}
+
+					// 당첨갯수 초기화
+					rlt.cnts = 0;
+				}
+				
+				// 당첨 결과 표시
+				printf("\n======= [ 수동 당첨 결과 ] =======\n");
+				for (int i = 0; i < 6; i++)
+				{
+					if (i < 5)
+					{
+						printf("%d 등 - ", i + 1);
+					}
+					else
+					{
+						printf("낙첨 - ");
+					}
+					printf("%d 게임\n", semi.pick[i][0]);
+				}
+				printf("\n=============================\n");
+			}
+
+			// 로또 구매 비용 및 당첨금
+			printf("\n( 구매 비용과 당첨금 차익 )\n");
+			if (aut.money > 0)
+			{
+				printf("자동 구매 비용 - %d 원\n", aut.money);
+			}
+
+			if (semi.money > 0)
+			{
+				printf("수동 구매 비용 - %d 원\n", semi.money);
+			}
+
+			// 총 구매비용 계산
+			printf("구매 총 비용 - %d 원\n", aut.money + semi.money);
+			
+			// 총 당첨금
+			for (int i = 0; i < 5; i++)
+			{
+				rlt.money = (aut.pick[i][0] + semi.pick[i][0]) * game.rcash[i] + rlt.money;
+			}
+
+			printf("당첨금액 총합 - %d 원\n", rlt.money);
+
+			// 차익
+			printf("\n----------------------------------------\n");
+			printf("손익 - %d 원\n", rlt.money - aut.money - semi.money);
+
+			// 중복 방지를 위한 총 당첨금 초기화
+			rlt.money = 0;
+
+			
+			// 당첨 세부내용 확인
+			printf("\n당첨 세부내용을 확인하겠습니까? ( 1.확인 / 2.확인안함) - ");
+			scanf("%d", &slt.num);
+
+			// 세부내용 확인
+			if (slt.num == 1)
+			{
+				printf("\n( 당첨 세부내용 확인 )\n");
+				printf("---------------- \n");
+				printf("[ ");
+				for (int t = 0; t < 6; t++)
+				{
+					if (aut.pick[t][0] + semi.pick[t][0] > 0)
+					{
+						if (t < 5)
+						{
+							printf("%d 등 - ", t + 1);
+						}
+						else
+						{
+							printf("낙첨 - ");
+						}
+						
+
+						if (aut.pick[t][0] > 0)
+						{
+							printf("자동 %d 게임 ", aut.pick[t][0]);
+						}
+						if (semi.pick[t][0] > 0)
+						{
+							printf("수동 %d 게임 ", semi.pick[t][0]);
+						}
+						printf("/");
+					}					
+				}
+				printf(" ]");
+				printf("\n---------------- \n");
+				
+				// 이번 당첨번호 표기
+				printf("이번 당첨번호 - [");
+				for (int i = 0; i < 6; i++)
+				{
+					printf(" %d ", rlt.rnum[i]);
+				}
+				printf("] / ");
+				printf("보너스 번호 - %d\n", rlt.bns);
+				for (int t = 0; t < 6; t++)
+				{
+					if (aut.pick[t][0] > 0)
+					{
+						printf("\n( 자동 당첨 게임 및 번호 )\n");
+						for (int i = 1; i < 101; i++)
+						{
+							if (aut.pick[t][i] > 0)
+							{
+								printf("%d 번 게임 [ ", aut.pick[t][i]);
+								for (int k = 0; k < 6; k++)
+								{
+									// 당첨번호랑 일치 번호 표시
+									if (aut.snum[aut.pick[t][i]][k] == rlt.rnum[k])
+									{
+										printf(" (%d) ", aut.snum[aut.pick[t][i]][k]);
+									}
+
+									// 보너스 번호랑 일치 번호 표시
+									else if (aut.snum[aut.pick[t][i]][k] == rlt.bns)
+									{
+										printf(" 보(%d) ", aut.snum[aut.pick[t][i]][k]);
+									}
+
+									// 미일치 번호 표시
+									else
+									{
+										printf(" %d ", aut.snum[aut.pick[t][i]][k]);
+									}
+
+								}
+								printf(" ]\n");
+							}
+						}
+					}
+
+					if (semi.pick[t][0] > 0)
+					{
+						printf("\n( 수동 당첨 게임 및 번호 )\n");
+						for (int i = 1; i < 101; i++)
+						{
+							if (semi.pick[t][i] > 0)
+							{
+								printf("%d 번 게임 [", semi.pick[t][i]);
+								for (int k = 0; k < 6; k++)
+								{
+									// 당첨번호랑 일치 번호 표시
+									if (semi.snum[semi.pick[t][i]][k] == rlt.rnum[k])
+									{
+										printf(" (%d) ", semi.snum[semi.pick[t][i]][k]);
+									}
+
+									// 보너스 번호랑 일치 번호 표시
+									else if (semi.snum[semi.pick[t][i]][k] == rlt.bns)
+									{
+										printf(" 보(%d) ", semi.snum[semi.pick[t][i]][k]);
+									}
+
+									// 미일치 번호 표시
+									else
+									{
+										printf(" %d ", semi.snum[semi.pick[t][i]][k]);
+									}
+								}
+								printf(" ]\n");
+							}
+						}
+					}
+				}
+			}
+
+			// 세부내용 확인 안함
+			else if (slt.num == 2)
+			{
+				printf("세부내용을 확인하지 않고 처음으로 돌아갑니다.\n");
+			}
+		}
+
+		// 당첨금액 입력  >>>>>>> 10원 밑으로 절삭 확인
+		else if (slt.num == 4)
+		{
+			while (1)
+			{
+				printf("\n[ 당첨금 입력 ]\n"); // 본래 총 판매비용의 50%만 당첨금으로 사용, 총 당첨금의 30 ~ 10%로 자동할당 커스텀
+				
+				// 총 당첨금 입력
+				do
+				{
+					printf("총 당첨금 입력 - ");
+					scanf("%d", &total.cash);
+					if (total.cash == 0)
+					{
+						printf("총 당첨금을 다시 확인해주세요\n");
+					}
+				} while (total.cash == 0);
+				
+				// 등수별 당첨금 분배
+				printf("총 당첨금에 비율로 등수별 당첨금을 분배합니다.\n");
+				printf("\n( 분배결과 )\n");
+				for (int i = 0; i < 5; i++)
+				{
+					game.rcash[i] = total.cash * (6 - i) * 0.05;
+					printf("%d 등 총 당첨금(원) - %d 원\n", i + 1, game.rcash[i]);
+				}
+
+				// 저장 확인
+				printf("저장하시겠습니까? ( 1.저장 / 2.재입력 ) - ");
+				scanf("%d", &slt.num);
+				if (slt.num == 1)
+				{
+					printf("저장되었습니다.\n");
+					break;
+				}
+
+				else
+				{
+					printf("재입력합니다.\n");
+				}
+			}
+		}
+
+		else
+		{
+			printf("입력한 숫자를 확인해주세요.\n");
+		}
+
+	}
+}
