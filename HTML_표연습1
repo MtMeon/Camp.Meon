@@ -1,0 +1,111 @@
+<!docutype html>
+<html>
+<head>
+<title>텐고작전</title>
+<meta charset = "utf-8">
+<style type = "text/css">
+td
+{
+	background-color:#2E8B57;
+}
+
+tr
+{
+	height:40px;
+}
+
+td
+{
+	color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<table>
+<tr>
+<td colspan = "3" style = "text-align:center; background-color:#003300; font-weight:bold;">텐 고 작 전</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "text-align:center; background-color:#2E8B57; font-weight:bold;">날  짜</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "text-align:center; color:black; background-color:#8FBC8F;">1945년 4월 7일</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "text-align:center; background-color:#2E8B57; color:white; font-weight:bold;">장  소</td>
+</tr> 
+
+<tr>
+<td colspan = "3" style = "text-align:center; color:black; background-color:#8FBC8F;">규슈와 오키나와 제도 사이의 해역</td>
+</tr>
+
+<tr>
+<td style = "width:100px;"></td>
+<td style = "background-color:#0101DF; text-align:center; color:white;font-weight:bold; width:250px">미 국</td>
+<td style = "background-color:#FF0000; text-align:center; color:white; font-weight:bold; width:250px">일본 제국</td>
+</tr>
+
+<tr>
+<td style = "width:100px; color:white; text-align:center; font-weight:bold;">지휘관</td>
+<td style = "height:100px; background-color:#6495ED; color:black; text-align:center; width:250px;">마크 미처<br>조세프 J.클라크<br>프레데릭 C.셔먼</td>
+<td style = "background-color:#F08080; color:black; text-align:center; width:250px;">이토 세이이치(전사)<br>코무라 케이조(전사)<br>아루가 코사쿠(전사)</td>
+</tr>
+
+<tr>
+<td style = "width:100px; color:white; text-align:center; font-weight:bold;">참가 부대</td>
+<td style = "background-color:#6495ED; color:black; text-align:center; width:250px;">제58기동함대</td>
+<td style = "background-color:#F08080; text-align:center; width:250px;"><span style = "color:blue;">연합함대</span>, <span style = "color:red;">제2함대</span></td>
+</tr>
+
+<tr>
+<td style = "width:100px; color:white; text-align:center; font-weight:bold;">병  력</td>
+<td style = "height:130px; background-color:#6495ED; color:black; text-align:center; width:250px;">항공모함 11척<br>전함 6척<br>순양함 11척<br>구축함 30척<br>항공기 386기<br></td>
+<td style = "background-color:#F08080; color:black; text-align:center; width:250px;">전함 <span style = "color:blue;">야마토</span><br>경순양함<span style = "color:blue;">야하기</span><br>구축함 8척</td>
+</tr>
+
+<tr>
+<td style = "width:100px; height:180px; color:white; text-align:center; font-weight:bold;">피해규모</td>
+<td style = "background-color:#6495ED; color:black; width:250px;">
+항공기 12기 격추(야마토 공격)<br>
+카미카제에 의한 피해<br>
+85명 전사<br>
+122명 부상<br>
+항공모함 1척 중파<br>
+전함 1척 중파<br>
+구축함 1척 대파
+</td>
+<td style = "background-color:#F08080; color:black; width:250px;">
+야마토 격침<br>
+야하기 격침<br>
+구축함 4척 격침<br>
+구축함 1척 대파<br>
+3,700 ~ 4,250명 사망(야마토)
+</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "text-align:center;">결 과</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "background-color:#8FBC8F; color:black; text-align:center;">미 해군의 승리, 일본 해군의 오키나와 방어 실패</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "text-align:center;">기 타</td>
+</tr>
+
+<tr>
+<td colspan = "3" style = "background-color:#8FBC8F; color:black; text-align:center;">일본 해군의 마지막 대규모 작전</td>
+</tr>
+
+</table>
+
+</body>
+</html>
